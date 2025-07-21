@@ -1,0 +1,54 @@
+
+
+
+    
+    Выбор пола
+    
+    
+    
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: transparent; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
+        .container { background: #e6f0fa; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #1e90ff; font-size: 24px; margin-bottom: 20px; }
+        .gender-option { margin: 20px 0; }
+        input[type="radio"] { margin-right: 10px; }
+        label { font-size: 16px; }
+        button { width: 100%; padding: 12px; margin-top: 20px; border: none; border-radius: 10px; background: #1e90ff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+        button:hover { background: #005cbf; }
+        .error-toast { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); background: #ff4d4f; color: #fff; padding: 10px 15px; border-radius: 10px; display: none; }
+        @media (max-width: 768px) { .container { padding: 20px; max-width: 90%; } h2 { font-size: 20px; } }
+        @media (max-width: 480px) { .container { padding: 15px; } h2 { font-size: 18px; } }
+    
+
+
+    
+        Выбор пола
+        
+            
+            Мужской
+            
+            Женский
+        
+        Далее
+    
+    
+
+<script>
+    function selectGender() {
+        const gender = document.querySelector('input[name="gender"]:checked').value;
+        cef.emit('select_gender', gender);
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    cef.on('show_gender_select', () => {
+        document.getElementById('male').checked = true; // Сброс на мужской по умолчанию
+    });
+</script>
+
+(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'962bcdd18f8822ea',t:'MTc1MzExMjUwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
