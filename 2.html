@@ -1,254 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
     <title>Авторизация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            font-family: 'Roboto', Arial, sans-serif;
         }
 
         body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: transparent;
-            color: #333;
+            color: #fff;
         }
 
         .container {
-            background: #e6f0fa;
+            background: #1e2a38;
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 400px;
+            animation: fadeIn 1s ease;
+        }
+
+        h2 {
             text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        h1 {
-            font-size: 28px;
-            color: #1e90ff;
             margin-bottom: 20px;
-            font-weight: 500;
         }
 
-        input {
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             margin: 10px 0;
-            border: 2px solid #1e90ff;
-            border-radius: 10px;
-            background: #ffffff;
-            color: #333;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
+            border: none;
+            border-radius: 8px;
+            background: #2e3e52;
+            color: white;
+            font-size: 14px;
+            transition: 0.3s;
         }
 
         input:focus {
-            border-color: #005cbf;
-        }
-
-        input[readonly] {
-            background: #f0f0f0;
-            cursor: not-allowed;
+            outline: none;
+            background: #3c506c;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            margin: 15px 0;
+            margin-top: 15px;
+            background-color: #0e76a8;
+            color: white;
             border: none;
-            border-radius: 10px;
-            background: #1e90ff;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            font-weight: 600;
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #005cbf;
+            background-color: #0a5f8a;
         }
 
-        .toggle {
-            color: #1e90ff;
+        .form-switch {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .form-switch span {
+            color: #4ab1ff;
             cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            transition: color 0.3s ease;
+            font-weight: 600;
         }
 
-        .toggle:hover {
-            color: #005cbf;
+        .error-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4d4f;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            animation: slideUp 0.5s ease;
         }
 
-        .error {
-            color: #ff4d4d;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                max-width: 90%;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
             }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            input, button {
-                font-size: 14px;
-                padding: 10px;
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
             }
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-                max-width: 95%;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
             }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            input, button {
-                font-size: 13px;
-                padding: 8px;
+            to {
+                opacity: 1;
+                transform: scale(1);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="auth">
-        <h1>Вход</h1>
-        <input type="text" id="username" placeholder="Имя пользователя" readonly>
-        <input type="password" id="password" placeholder="Пароль">
-        <button onclick="login()">Войти</button>
-        <p class="toggle" onclick="showRegister()">Нет аккаунта? Зарегистрируйтесь</p>
-        <p class="toggle" onclick="showRecovery()">Восстановить пароль</p>
-        <div id="error" class="error"></div>
+    <div class="container" id="login-form">
+        <h2>Вход</h2>
+        <input type="text" id="login-username" placeholder="Никнейм" />
+        <input type="password" id="login-password" placeholder="Пароль" />
+        <button onclick="submitLogin()">Войти</button>
+        <div class="form-switch">Нет аккаунта? <span onclick="showRegister()">Зарегистрироваться</span></div>
+        <div class="form-switch"><span onclick="showRecovery()">Забыли пароль?</span></div>
     </div>
 
-    <div class="container" id="register" style="display: none;">
-        <h1>Регистрация</h1>
-        <input type="text" id="reg_username" placeholder="Имя пользователя" readonly>
-        <input type="email" id="reg_email" placeholder="Email">
-        <input type="password" id="reg_password" placeholder="Пароль">
-        <button onclick="register()">Зарегистрироваться</button>
-        <p class="toggle" onclick="showLogin()">Уже есть аккаунт? Войдите</p>
-        <div id="error" class="error"></div>
+    <div class="container" id="register-form" style="display: none;">
+        <h2>Регистрация</h2>
+        <input type="text" id="register-username" placeholder="Никнейм" />
+        <input type="email" id="register-email" placeholder="Email" />
+        <input type="password" id="register-password" placeholder="Пароль" />
+        <button onclick="submitRegister()">Зарегистрироваться</button>
+        <div class="form-switch">Есть аккаунт? <span onclick="showLogin()">Войти</span></div>
     </div>
 
-    <div class="container" id="recovery" style="display: none;">
-        <h1>Восстановление пароля</h1>
-        <input type="email" id="recovery_email" placeholder="Email">
-        <button onclick="recover()">Восстановить</button>
-        <p class="toggle" onclick="showLogin()">Вернуться ко входу</p>
-        <div id="error" class="error"></div>
+    <div class="container" id="recovery-form" style="display: none;">
+        <h2>Восстановление</h2>
+        <input type="email" id="recovery-email" placeholder="Email" />
+        <button onclick="submitRecovery()">Восстановить</button>
+        <div class="form-switch">Назад к <span onclick="showLogin()">входу</span></div>
     </div>
+
+    <div id="toast" class="error-toast" style="display: none;"></div>
 
     <script>
-        // Показываем форму входа при загрузке
-        document.getElementById('auth').style.display = 'block';
-        document.getElementById('register').style.display = 'none';
-        document.getElementById('recovery').style.display = 'none';
-
-        // Запрашиваем имя игрока при загрузке
-        mp.trigger('get_name');
-
-        // Получаем имя игрока от сервера
-        mp.on('set_name', (name) => {
-            document.getElementById('username').value = name;
-            document.getElementById('reg_username').value = name;
-        });
-
-        function showRegister() {
-            document.getElementById('auth').style.display = 'none';
-            document.getElementById('register').style.display = 'block';
-            document.getElementById('recovery').style.display = 'none';
-            document.getElementById('error').innerText = '';
+        function showLogin() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('recovery-form').style.display = 'none';
         }
 
-        function showLogin() {
-            document.getElementById('auth').style.display = 'block';
-            document.getElementById('register').style.display = 'none';
-            document.getElementById('recovery').style.display = 'none';
-            document.getElementById('error').innerText = '';
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('recovery-form').style.display = 'none';
         }
 
         function showRecovery() {
-            document.getElementById('auth').style.display = 'none';
-            document.getElementById('register').style.display = 'none';
-            document.getElementById('recovery').style.display = 'block';
-            document.getElementById('error').innerText = '';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('recovery-form').style.display = 'block';
         }
 
-        function login() {
-            const password = document.getElementById('password').value.trim();
-            if (password) {
-                mp.trigger('auth_login', password);
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function submitLogin() {
+            const password = document.getElementById('login-password').value;
+            cef.emit('auth_login', password);
+        }
+
+        function submitRegister() {
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            cef.emit('auth_register', `${email}|${password}`);
+        }
+
+        function submitRecovery() {
+            const email = document.getElementById('recovery-email').value;
+            cef.emit('auth_recovery', email);
+        }
+
+        cef.on('auth_error', showToast);
+        cef.on('register_error', showToast);
+        cef.on('recovery_error', showToast);
+
+        cef.on('account_status', function(status) {
+            if (status === 'registered') {
+                showLogin();
             } else {
-                document.getElementById('error').innerText = 'Введите пароль!';
+                showRegister();
             }
-        }
-
-        function register() {
-            const email = document.getElementById('reg_email').value.trim();
-            const password = document.getElementById('reg_password').value.trim();
-            if (email && password) {
-                mp.trigger('auth_register', email + '|' + password);
-            } else {
-                document.getElementById('error').innerText = 'Заполните все поля!';
-            }
-        }
-
-        function recover() {
-            const email = document.getElementById('recovery_email').value.trim();
-            if (email) {
-                mp.trigger('auth_recovery', email);
-            } else {
-                document.getElementById('error').innerText = 'Введите email!';
-            }
-        }
-
-        // Обработка событий от сервера
-        mp.on('auth_error', (message) => {
-            document.getElementById('error').innerText = message;
         });
 
-        mp.on('register_error', (message) => {
-            document.getElementById('error').innerText = message;
-        });
-
-        mp.on('register_success', () => {
-            document.getElementById('error').innerText = 'Регистрация успешна! Пожалуйста, войдите.';
-            showLogin();
-        });
-
-        mp.on('recovery_error', (message) => {
-            document.getElementById('error').innerText = message;
-        });
-
-        mp.on('recovery_success', (message) => {
-            document.getElementById('error').innerText = message;
-            showLogin();
-        });
-
-        mp.on('auth_success', () => {
-            document.getElementById('error').innerText = 'Авторизация успешна!';
-        });
+        cef.emit('get_name');
     </script>
 </body>
 </html>
