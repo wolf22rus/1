@@ -6,96 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <style>
-        * {
-            box-sizing: border-box;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: transparent; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
+        .container { background: #e6f0fa; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #1e90ff; font-size: 24px; margin-bottom: 20px; }
+        input[type="text"], input[type="password"], input[type="email"] { 
+            width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #1e90ff; border-radius: 10px; 
+            background: #fff; color: #333; font-size: 14px; transition: border-color 0.3s; 
         }
-
-	body {
-		font-family: 'Inter', sans-serif;
-		background: transparent;
-		margin: 0;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 100vh;
-		color: #fff;
-	}
-
-
-        .container {
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 6px;
-            background: #2b2b2b;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        input:focus {
-            outline: none;
-            background: #3c3c3c;
-        }
-
-        input[readonly] {
-            background: #2b2b2b;
-            cursor: not-allowed;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background-color: #0078d7;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #005fa3;
-        }
-
-        .form-switch {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .form-switch span {
-            color: #4ab1ff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .error-toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ff4d4f;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-        }
+        input:focus { border-color: #005cbf; outline: none; }
+        input[readonly] { background: #f0f0f0; cursor: not-allowed; }
+        button { width: 100%; padding: 12px; margin: 15px 0; border: none; border-radius: 10px; 
+                 background: #1e90ff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #005cbf; }
+        .form-switch { font-size: 14px; margin-top: 10px; }
+        .form-switch span { color: #1e90ff; cursor: pointer; font-weight: 600; }
+        .form-switch span:hover { color: #005cbf; }
+        .error-toast { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); 
+                       background: #ff4d4f; color: #fff; padding: 10px 15px; border-radius: 10px; display: none; }
+        @media (max-width: 768px) { .container { padding: 20px; max-width: 90%; } h2 { font-size: 20px; } }
+        @media (max-width: 480px) { .container { padding: 15px; } h2 { font-size: 18px; } input, button { font-size: 12px; padding: 8px; } }
     </style>
 </head>
 <body>
@@ -124,69 +54,34 @@
         <div class="form-switch">Назад к <span onclick="showLogin()">входу</span></div>
     </div>
 
-    <div id="toast" class="error-toast" style="display: none;"></div>
+    <div id="toast" class="error-toast"></div>
 
     <script>
-        function showLogin() {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('recovery-form').style.display = 'none';
-        }
+        function showLogin() { toggleDisplay('login-form'); }
+        function showRegister() { toggleDisplay('register-form'); }
+        function showRecovery() { toggleDisplay('recovery-form'); }
 
-        function showRegister() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('recovery-form').style.display = 'none';
-        }
-
-        function showRecovery() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('recovery-form').style.display = 'block';
+        function toggleDisplay(id) {
+            ['login-form', 'register-form', 'recovery-form'].forEach(form => 
+                document.getElementById(form).style.display = form === id ? 'block' : 'none');
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
             toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        function submitLogin() {
-            const password = document.getElementById('login-password').value;
-            cef.emit('auth_login', password);
-        }
-
-        function submitRegister() {
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            cef.emit('auth_register', `${email}|${password}`);
-        }
-
-        function submitRecovery() {
-            const email = document.getElementById('recovery-email').value;
-            cef.emit('auth_recovery', email);
-        }
+        function submitLogin() { cef.emit('auth_login', document.getElementById('login-password').value); }
+        function submitRegister() { cef.emit('auth_register', `${document.getElementById('register-email').value}|${document.getElementById('register-password').value}`); }
+        function submitRecovery() { cef.emit('auth_recovery', document.getElementById('recovery-email').value); }
 
         cef.on('auth_error', showToast);
         cef.on('register_error', showToast);
         cef.on('recovery_error', showToast);
-
-        cef.on('account_status', function(status) {
-            if (status === 'registered') {
-                showLogin();
-            } else {
-                showRegister();
-            }
-        });
-
-        cef.on('set_name', function(name) {
-            document.getElementById('login-username').value = name;
-            document.getElementById('register-username').value = name;
-        });
-
+        cef.on('account_status', status => status === 'registered' ? showLogin() : showRegister());
+        cef.on('set_name', name => { document.getElementById('login-username').value = name; document.getElementById('register-username').value = name; });
         cef.emit('get_name');
     </script>
 </body>
