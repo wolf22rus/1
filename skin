@@ -1,0 +1,73 @@
+
+
+
+    
+    
+    Test CEF - Выбор скина
+    
+
+
+    
+        Выберите скин
+        
+            ←
+            
+                
+                Скин 1
+            
+            →
+        
+        Подтвердить выбор
+    
+
+<script>
+    const maleSkins = [
+        { id: 0, name: 'CJ', image: 'cj.png' },
+        { id: 7, name: 'Ryder', image: 'ryder.png' },
+        { id: 105, name: 'Grove Street', image: 'grove.png' },
+        { id: 106, name: 'Smoke', image: 'smoke.png' }
+    ];
+    const femaleSkins = [
+        { id: 108, name: 'Ballas Girl', image: 'ballas.png' },
+        { id: 109, name: 'Vagos Girl', image: 'vagos.png' },
+        { id: 110, name: 'Aztecas Girl', image: 'aztecas.png' }
+    ];
+
+    let skins = [];
+    let currentSkinIndex = 0;
+
+    window.addEventListener('message', (event) => {
+        if(event.data.type === 'player:gender') {
+            skins = event.data.gender === 1 ? maleSkins : femaleSkins;
+            updateSkin();
+        }
+    });
+
+    function updateSkin() {
+        const skin = skins[currentSkinIndex];
+        document.getElementById('skin-image').src = skin.image; // Замените на реальные пути
+        document.getElementById('skin-name').textContent = skin.name;
+    }
+
+    function prevSkin() {
+        currentSkinIndex = (currentSkinIndex - 1 + skins.length) % skins.length;
+        updateSkin();
+    }
+
+    function nextSkin() {
+        currentSkinIndex = (currentSkinIndex + 1) % skins.length;
+        updateSkin();
+    }
+
+    function confirmSkin() {
+        const skin = skins[currentSkinIndex];
+        const data = JSON.stringify(skin.id);
+        if(typeof samp !== 'undefined') {
+            samp.callPublic('OnCefEvent', 'ss', 'player:select_skin', data);
+        } else {
+            console.log('Выбран скин:', skin.id);
+        }
+    }
+</script>
+
+(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'962bcaf1ef9c22ea',t:'MTc1MzExMjM4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
