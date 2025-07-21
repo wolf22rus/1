@@ -1,11 +1,11 @@
-
-
-
-    
-    Выбор пола
-    
-    
-    
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Выбор пола</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: transparent; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
         .container { background: #e6f0fa; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
@@ -18,37 +18,37 @@
         .error-toast { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); background: #ff4d4f; color: #fff; padding: 10px 15px; border-radius: 10px; display: none; }
         @media (max-width: 768px) { .container { padding: 20px; max-width: 90%; } h2 { font-size: 20px; } }
         @media (max-width: 480px) { .container { padding: 15px; } h2 { font-size: 18px; } }
-    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Выбор пола</h2>
+        <div class="gender-option">
+            <input type="radio" id="male" name="gender" value="0" checked>
+            <label for="male">Мужской</label>
+            <input type="radio" id="female" name="gender" value="1" style="margin-left: 20px;">
+            <label for="female">Женский</label>
+        </div>
+        <button onclick="selectGender()">Далее</button>
+    </div>
+    <div id="toast" class="error-toast"></div>
 
+    <script>
+        function selectGender() {
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            cef.emit('select_gender', gender);
+        }
 
-    
-        Выбор пола
-        
-            
-            Мужской
-            
-            Женский
-        
-        Далее
-    
-    
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
 
-<script>
-    function selectGender() {
-        const gender = document.querySelector('input[name="gender"]:checked').value;
-        cef.emit('select_gender', gender);
-    }
-
-    function showToast(message) {
-        const toast = document.getElementById('toast');
-        toast.innerText = message;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
-    }
-
-    cef.on('show_gender_select', () => {
-        document.getElementById('male').checked = true; // Сброс на мужской по умолчанию
-    });
-</script>
-
-(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'962bcdd18f8822ea',t:'MTc1MzExMjUwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+        cef.on('show_gender_select', () => {
+            document.getElementById('male').checked = true; // Сброс на мужской по умолчанию
+        });
+    </script>
+</body>
+</html>
