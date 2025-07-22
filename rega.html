@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Nobara RPG - Регистрация</title>
+    <style>
+        /* Основные стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: transparent;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .blur-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+        
+        .auth-container {
+            position: relative;
+            width: 380px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,77,77,0.1), rgba(0,183,235,0.1), rgba(0,255,0,0.1));
+            transform: rotate(45deg);
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+            background-size: 400% 400%;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff4d4d, #00b7eb, #00ff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientText 5s linear infinite;
+        }
+        
+        .logo p {
+            color: #bbb;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #bbb;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: rgba(0, 183, 235, 0.5);
+            background: rgba(0, 183, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 183, 235, 0.2);
+        }
+        
+        .btn {
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            background: #00b7eb;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 183, 235, 0.3);
+            background: #0097c7;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #bbb;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 183, 235, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #bbb;
+            font-size: 13px;
+        }
+        
+        .form-footer a {
+            color: #00b7eb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .form-footer a:hover {
+            color: #0097c7;
+        }
+        
+        .error-message {
+            color: #ff4d4d;
+            font-size: 13px;
+            margin-top: 5px;
+            text-align: center;
+            opacity: 0;
+            height: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+            height: auto;
+            margin-top: 10px;
+        }
+        
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; transform: scale(0.9); }
+        }
+        
+        @media (max-width: 480px) {
+            .auth-container {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blur-overlay"></div>
+    
+    <div class="auth-container" id="authContainer">
+        <div class="logo">
+            <h1>NOBARA RPG</h1>
+            <p id="formTitle">Создайте аккаунт</p>
+        </div>
+        
+        <div class="auth-form">
+            <div class="input-group">
+                <label>Имя пользователя</label>
+                <input type="text" id="regUsername" disabled="disabled" value="TestPlayer">
+            </div>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Ваш email">
+            </div>
+            
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="regPassword" placeholder="Не менее 8 символов">
+            </div>
+            
+            <div class="input-group">
+                <label>Подтвердите пароль</label>
+                <input type="password" id="confirmPassword" placeholder="Повторите пароль">
+            </div>
+            
+            <div id="registerError" class="error-message"></div>
+            
+            <button class="btn" id="registerBtn">Зарегистрироваться</button>
+        </div>
+    </div>
+
+    <script>
+        let playerName = '';
+
+        function debug(message) {
+            if (typeof cef !== 'undefined') {
+                cef.emit('debug_message', message);
+            } else {
+                console.log('Debug:', message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initPlayerName();
+            initAuthSystem();
+            setupCefListeners();
+        });
+
+        function initPlayerName() {
+            if (typeof cef !== 'undefined') {
+                cef.on('set_name', function(name) {
+                    if (name && name.trim() !== '') {
+                        playerName = name.trim();
+                        updatePlayerName(playerName);
+                        debug('Ник успешно получен: ' + playerName);
+                    }
+                });
+                cef.emit('get_name');
+                debug('Запрос ника отправлен');
+            } else {
+                playerName = 'TestPlayer';
+                updatePlayerName(playerName);
+                debug('CEF не доступен, используется тестовый ник: ' + playerName);
+            }
+        }
+
+        function updatePlayerName(name) {
+            const regUsernameField = document.getElementById('regUsername');
+            if (regUsernameField) {
+                regUsernameField.value = name;
+                regUsernameField.placeholder = name;
+            }
+        }
+
+        function setupCefListeners() {
+            if (typeof cef !== 'undefined') {
+                cef.on('register_success', () => {
+                    debug('Успешная регистрация');
+                    fadeOutAndClose();
+                });
+
+                cef.on('register_error', (message) => {
+                    showError(message, 'register');
+                    debug('Ошибка регистрации: ' + message);
+                });
+            }
+        }
+
+        function initAuthSystem() {
+            document.getElementById('registerBtn').addEventListener('click', register);
+
+            document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') register();
+            });
+        }
+
+        function showError(message, formType = 'register') {
+            const errorElement = document.getElementById('registerError');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            setTimeout(() => {
+                errorElement.classList.remove('show');
+            }, 5000);
+        }
+
+        function register() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            debug('Нажата кнопка регистрации');
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Введите корректный email');
+                debug('Ошибка: Некорректный email: ' + email);
+                return;
+            }
+            
+            if (!password || password.length < 8 || /\s/.test(password)) {
+                showError('Пароль должен быть не менее 8 символов и не содержать пробелов');
+                debug('Ошибка: Неверный формат пароля');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Пароли не совпадают');
+                debug('Ошибка: Пароли не совпадают');
+                return;
+            }
+            
+            const data = email + "|" + password;
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_register', data);
+                debug('Отправлено auth_register с данными: ' + data);
+            } else {
+                debug('Тестовая регистрация успешна');
+                fadeOutAndClose();
+            }
+        }
+
+        function fadeOutAndClose() {
+            const container = document.getElementById('authContainer');
+            container.style.animation = 'fadeOut 0.5s forwards';
+            setTimeout(() => {
+                if (typeof cef !== 'undefined') {
+                    cef.emit('ExitCef', '');
+                    debug('Отправлено ExitCef');
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>
