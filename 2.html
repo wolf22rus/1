@@ -176,9 +176,12 @@
             document.querySelectorAll('.form').forEach(form => {
                 form.classList.remove('active');
             });
-            document.getElementById(formId).classList.add('active');
-            document.getElementById('error-message').style.display = 'none';
-            document.getElementById('error-message').innerText = '';
+            const form = document.getElementById(formId);
+            if (form) {
+                form.classList.add('active');
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('error-message').innerText = '';
+            }
         }
 
         // Отправка данных для входа
@@ -221,7 +224,7 @@
 
         // Обработка событий от сервера
         document.addEventListener('cefEvent', function(event) {
-            console.log('Получено событие:', event.detail.name, event.detail.args);
+            console.log('Получено событие:', event.detail.name, event.detail.args); // Отладка
             const eventName = event.detail.name;
             const args = event.detail.args;
 
@@ -233,8 +236,13 @@
                     showForm('register-form');
                     break;
                 case 'set_name':
-                    document.getElementById('username').value = args[0];
-                    document.getElementById('register-username').value = args[0];
+                    if (args && args.length > 0) {
+                        document.getElementById('username').value = args[0];
+                        document.getElementById('register-username').value = args[0];
+                        console.log('Имя установлено:', args[0]); // Дополнительная отладка
+                    } else {
+                        console.error('Ошибка: аргументы set_name отсутствуют');
+                    }
                     break;
                 case 'auth_success':
                 case 'register_success':
