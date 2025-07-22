@@ -5,250 +5,114 @@
     <title>Авторизация</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
         }
-
         body {
+            background: #f2f2f2;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: transparent;
-            color: #333;
         }
-
         .container {
-            background: #e6f0fa;
+            background: #fff;
             padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
         }
-
         h1 {
-            font-size: 28px;
-            color: #1e90ff;
             margin-bottom: 20px;
-            font-weight: 500;
+            font-size: 22px;
         }
-
         input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #1e90ff;
-            border-radius: 10px;
-            background: #ffffff;
-            color: #333;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
+            padding: 10px;
+            margin-bottom: 10px;
         }
-
-        input:focus {
-            border-color: #005cbf;
-        }
-
-        input[readonly] {
-            background: #f0f0f0;
-            cursor: not-allowed;
-        }
-
         button {
             width: 100%;
-            padding: 12px;
-            margin: 15px 0;
-            border: none;
-            border-radius: 10px;
-            background: #1e90ff;
-            color: #ffffff;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: #005cbf;
-        }
-
-        .toggle {
-            color: #1e90ff;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .toggle:hover {
-            color: #005cbf;
-        }
-
-        .error {
-            color: #ff4d4d;
-            font-size: 14px;
+            padding: 10px;
             margin-top: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                max-width: 90%;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            input, button {
-                font-size: 14px;
-                padding: 10px;
-            }
+        .toggle {
+            margin-top: 10px;
+            text-align: center;
+            color: #007bff;
+            cursor: pointer;
         }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-                max-width: 95%;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            input, button {
-                font-size: 13px;
-                padding: 8px;
-            }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="auth" style="display:none;">
-        <h1>Вход</h1>
-        <input type="text" id="username" placeholder="Имя пользователя" readonly>
-        <input type="password" id="password" placeholder="Пароль">
-        <button onclick="login()">Войти</button>
-        <p class="toggle" onclick="showRegister()">Нет аккаунта? Зарегистрируйтесь</p>
-        <p class="toggle" onclick="showRecovery()">Восстановить пароль</p>
-        <div id="error_auth" class="error"></div>
-    </div>
 
-    <div class="container" id="register" style="display:none;">
-        <h1>Регистрация</h1>
-        <input type="text" id="reg_username" placeholder="Имя пользователя" readonly>
-        <input type="email" id="reg_email" placeholder="Email">
-        <input type="password" id="reg_password" placeholder="Пароль">
-        <button onclick="register()">Зарегистрироваться</button>
-        <p class="toggle" onclick="showLogin()">Уже есть аккаунт? Войдите</p>
-        <div id="error_register" class="error"></div>
-    </div>
+<div class="container" id="auth">
+    <h1>Авторизация</h1>
+    <input type="text" id="login_username" placeholder="Имя пользователя" readonly>
+    <input type="password" id="login_password" placeholder="Пароль">
+    <button onclick="login()">Войти</button>
+    <p class="toggle" onclick="showRegister()">Нет аккаунта? Зарегистрируйтесь</p>
+    <div id="error_auth" class="error"></div>
+</div>
 
-    <div class="container" id="recovery" style="display:none;">
-        <h1>Восстановление пароля</h1>
-        <input type="email" id="recovery_email" placeholder="Email">
-        <button onclick="recover()">Восстановить</button>
-        <p class="toggle" onclick="showLogin()">Вернуться ко входу</p>
-        <div id="error_recovery" class="error"></div>
-    </div>
+<div class="container" id="register" style="display:none;">
+    <h1>Регистрация</h1>
+    <input type="text" id="reg_username" placeholder="Имя пользователя" readonly>
+    <input type="email" id="reg_email" placeholder="Email">
+    <input type="password" id="reg_password" placeholder="Пароль">
+    <button onclick="register()">Зарегистрироваться</button>
+    <p class="toggle" onclick="showLogin()">Уже есть аккаунт? Войти</p>
+    <div id="error_register" class="error"></div>
+</div>
 
-    <script>
-        // Получаем имя игрока от сервера
-        mp.on('set_name', (name) => {
-            document.getElementById('username').value = name;
-            document.getElementById('reg_username').value = name;
-        });
+<script>
+    // Получаем имя игрока от сервера
+    mp.on('set_name', (name) => {
+        document.getElementById('login_username').value = name;
+        document.getElementById('reg_username').value = name;
+    });
 
-        // Показываем нужную форму по запросу от сервера
-        mp.on('showLogin', () => {
-            showLogin();
-        });
+    // Показываем нужную форму по запросу сервера
+    mp.on('showLogin', () => {
+        showLogin();
+    });
 
-        mp.on('showRegister', () => {
-            showRegister();
-        });
+    mp.on('showRegister', () => {
+        showRegister();
+    });
 
-        function showLogin() {
-            document.getElementById('auth').style.display = 'block';
-            document.getElementById('register').style.display = 'none';
-            document.getElementById('recovery').style.display = 'none';
-            document.getElementById('error_auth').innerText = '';
-        }
+    function showLogin() {
+        document.getElementById('auth').style.display = 'block';
+        document.getElementById('register').style.display = 'none';
+        document.getElementById('error_auth').innerText = '';
+    }
 
-        function showRegister() {
-            document.getElementById('auth').style.display = 'none';
-            document.getElementById('register').style.display = 'block';
-            document.getElementById('recovery').style.display = 'none';
-            document.getElementById('error_register').innerText = '';
-        }
+    function showRegister() {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('register').style.display = 'block';
+        document.getElementById('error_register').innerText = '';
+    }
 
-        function showRecovery() {
-            document.getElementById('auth').style.display = 'none';
-            document.getElementById('register').style.display = 'none';
-            document.getElementById('recovery').style.display = 'block';
-            document.getElementById('error_recovery').innerText = '';
-        }
+    function login() {
+        const password = document.getElementById('login_password').value;
+        mp.trigger('login', password);
+    }
 
-        function login() {
-            const password = document.getElementById('password').value.trim();
-            if (password) {
-                mp.trigger('auth_login', password);
-            } else {
-                document.getElementById('error_auth').innerText = 'Введите пароль!';
-            }
-        }
+    function register() {
+        const email = document.getElementById('reg_email').value;
+        const password = document.getElementById('reg_password').value;
+        mp.trigger('register', email, password);
+    }
+</script>
 
-        function register() {
-            const email = document.getElementById('reg_email').value.trim();
-            const password = document.getElementById('reg_password').value.trim();
-            if (email && password) {
-                mp.trigger('auth_register', email + '|' + password);
-            } else {
-                document.getElementById('error_register').innerText = 'Заполните все поля!';
-            }
-        }
-
-        function recover() {
-            const email = document.getElementById('recovery_email').value.trim();
-            if (email) {
-                mp.trigger('auth_recovery', email);
-            } else {
-                document.getElementById('error_recovery').innerText = 'Введите email!';
-            }
-        }
-
-        mp.on('auth_error', (msg) => {
-            document.getElementById('error_auth').innerText = msg;
-        });
-
-        mp.on('register_error', (msg) => {
-            document.getElementById('error_register').innerText = msg;
-        });
-
-        mp.on('register_success', () => {
-            document.getElementById('error_register').innerText = 'Регистрация успешна!';
-            showLogin();
-        });
-
-        mp.on('recovery_error', (msg) => {
-            document.getElementById('error_recovery').innerText = msg;
-        });
-
-        mp.on('recovery_success', (msg) => {
-            document.getElementById('error_recovery').innerText = msg;
-            showLogin();
-        });
-
-        mp.on('auth_success', () => {
-            document.getElementById('error_auth').innerText = 'Авторизация успешна!';
-            // mp.trigger('auth_continue'); // можно тут вызывать переход к выбору скина/пола
-        });
-    </script>
 </body>
 </html>
