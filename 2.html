@@ -289,7 +289,7 @@
             if (typeof cef !== 'undefined') {
                 cef.emit('debug_message', message);
             } else {
-                console.log('Debug:', message);
+                console.log('Debug:', message); // Для локального теста
             }
         }
 
@@ -338,6 +338,23 @@
         // Настройка обработчиков событий от сервера
         function setupCefListeners() {
             if (typeof cef !== 'undefined') {
+                cef.on('account_status', (status) => {
+                    debug('Получен account_status: ' + status);
+                    const loginForm = document.getElementById('loginForm');
+                    const registerForm = document.getElementById('registerForm');
+                    if (status === 'registered' && registerForm.style.display !== 'none') {
+                        switchForm(registerForm, loginForm);
+                        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                        debug('Переключение на форму входа');
+                    } else if (status === 'not_registered' && loginForm.style.display !== 'none') {
+                        switchForm(loginForm, registerForm);
+                        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+                        debug('Переключение на форму регистрации');
+                    } else {
+                        debug('Состояние формы не требует переключения');
+                    }
+                });
+
                 cef.on('auth_success', () => {
                     debug('Успешная авторизация');
                     fadeOutAndClose();
@@ -372,18 +389,6 @@
                 cef.on('recovery_error', (message) => {
                     showError(message, 'recovery');
                     debug('Ошибка восстановления: ' + message);
-                });
-
-                cef.on('account_status', (status) => {
-                    if (status === 'registered') {
-                        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-                        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-                        debug('Аккаунт зарегистрирован, показана форма входа');
-                    } else {
-                        switchForm(document.getElementById('loginForm'), document.getElementById('registerForm'));
-                        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
-                        debug('Аккаунт не зарегистрирован, показана форма регистрации');
-                    }
                 });
             }
         }
