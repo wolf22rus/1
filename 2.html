@@ -13,7 +13,7 @@
         }
         
         body {
-            background-color: transparent; /* Как в спидометре */
+            background-color: transparent;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -33,7 +33,7 @@
         .auth-container {
             position: relative;
             width: 380px;
-            background: rgba(0, 0, 0, 0.5); /* Как в спидометре */
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
@@ -50,7 +50,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, rgba(255,77,77,0.1), rgba(0,183,235,0.1), rgba(0,255,0,0.1)); /* Цвета спидометра */
+            background: linear-gradient(45deg, rgba(255,77,77,0.1), rgba(0,183,235,0.1), rgba(0,255,0,0.1));
             transform: rotate(45deg);
             z-index: -1;
             animation: gradientBG 15s ease infinite;
@@ -66,7 +66,7 @@
             color: white;
             font-size: 28px;
             font-weight: 700;
-            background: linear-gradient(90deg, #ff4d4d, #00b7eb, #00ff00); /* Цвета спидометра */
+            background: linear-gradient(90deg, #ff4d4d, #00b7eb, #00ff00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-size: 200% auto;
@@ -74,7 +74,7 @@
         }
         
         .logo p {
-            color: #bbb; /* Как второстепенный текст в спидометре */
+            color: #bbb;
             font-size: 14px;
             margin-top: 5px;
         }
@@ -91,7 +91,7 @@
         
         .input-group label {
             display: block;
-            color: #bbb; /* Как в спидометре */
+            color: #bbb;
             margin-bottom: 8px;
             font-size: 14px;
             font-weight: 600;
@@ -103,14 +103,14 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            color: #fff; /* Белый текст */
+            color: #fff;
             font-size: 14px;
             transition: all 0.3s ease;
         }
         
         .input-group input:focus {
             outline: none;
-            border-color: rgba(0, 183, 235, 0.5); /* Голубой из спидометра */
+            border-color: rgba(0, 183, 235, 0.5);
             background: rgba(0, 183, 235, 0.1);
             box-shadow: 0 0 0 3px rgba(0, 183, 235, 0.2);
         }
@@ -119,7 +119,7 @@
             padding: 14px;
             border-radius: 8px;
             border: none;
-            background: #00b7eb; /* Голубой из спидометра */
+            background: #00b7eb;
             color: #fff;
             font-weight: 600;
             cursor: pointer;
@@ -131,18 +131,18 @@
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 183, 235, 0.3); /* Голубой из спидометра */
-            background: #0097c7; /* Чуть темнее голубого */
+            box-shadow: 0 5px 15px rgba(0, 183, 235, 0.3);
+            background: #0097c7;
         }
         
         .btn-secondary {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #bbb; /* Как второстепенный текст в спидометре */
+            color: #bbb;
         }
         
         .btn-secondary:hover {
-            background: rgba(0, 183, 235, 0.1); /* Голубой из спидометра */
+            background: rgba(0, 183, 235, 0.1);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             color: #fff;
@@ -151,22 +151,22 @@
         .form-footer {
             text-align: center;
             margin-top: 20px;
-            color: #bbb; /* Как в спидометре */
+            color: #bbb;
             font-size: 13px;
         }
         
         .form-footer a {
-            color: #00b7eb; /* Голубой из спидометра */
+            color: #00b7eb;
             text-decoration: none;
             transition: color 0.3s;
         }
         
         .form-footer a:hover {
-            color: #0097c7; /* Чуть темнее голубого */
+            color: #0097c7;
         }
         
         .error-message {
-            color: #ff4d4d; /* Красный из спидометра */
+            color: #ff4d4d;
             font-size: 13px;
             margin-top: 5px;
             text-align: center;
@@ -180,34 +180,7 @@
             height: auto;
             margin-top: 10px;
         }
-
-        /* Стили для полей ввода кода */
-        .code-inputs {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .code-inputs input {
-            width: 40px;
-            height: 50px;
-            text-align: center;
-            font-size: 18px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .code-inputs input:focus {
-            outline: none;
-            border-color: rgba(0, 183, 235, 0.5);
-            background: rgba(0, 183, 235, 0.1);
-            box-shadow: 0 0 0 3px rgba(0, 183, 235, 0.2);
-        }
         
-        /* Анимации */
         @keyframes gradientText {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -229,17 +202,10 @@
             to { opacity: 0; transform: scale(0.9); }
         }
         
-        /* Адаптивность */
         @media (max-width: 480px) {
             .auth-container {
                 width: 90%;
                 padding: 30px 20px;
-            }
-
-            .code-inputs input {
-                width: 35px;
-                height: 45px;
-                font-size: 16px;
             }
         }
     </style>
@@ -287,7 +253,7 @@
             
             <div class="input-group">
                 <label>Пароль</label>
-                <input type="password" id="regPassword" placeholder="Не менее 6 символов">
+                <input type="password" id="regPassword" placeholder="Не менее 8 символов">
             </div>
             
             <div class="input-group">
@@ -302,337 +268,299 @@
         </div>
 
         <div id="recoveryForm" class="auth-form" style="display: none;">
-            <div id="emailStep">
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="recoveryEmail" placeholder="Ваш email">
-                </div>
-                
-                <div id="recoveryError" class="error-message"></div>
-                
-                <button class="btn" id="sendCodeBtn">Отправить код</button>
-                <button class="btn btn-secondary" id="backToLoginBtn">Вернуться</button>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="recoveryEmail" placeholder="Ваш email">
             </div>
-
-            <div id="codeStep" style="display: none;">
-                <div class="input-group">
-                    <label>Введите 6-значный код</label>
-                    <div class="code-inputs">
-                        <input type="text" maxlength="1" class="code-input" id="code1">
-                        <input type="text" maxlength="1" class="code-input" id="code2">
-                        <input type="text" maxlength="1" class="code-input" id="code3">
-                        <input type="text" maxlength="1" class="code-input" id="code4">
-                        <input type="text" maxlength="1" class="code-input" id="code5">
-                        <input type="text" maxlength="1" class="code-input" id="code6">
-                    </div>
-                </div>
-                
-                <div id="codeError" class="error-message"></div>
-                
-                <button class="btn" id="verifyCodeBtn">Подтвердить код</button>
-                <button class="btn btn-secondary" id="backToEmailBtn">Назад</button>
-            </div>
-
-            <div id="newPasswordStep" style="display: none;">
-                <div class="input-group">
-                    <label>Введите новый пароль</label>
-                    <input type="password" id="newPassword" placeholder="Не менее 6 символов">
-                </div>
-                
-                <div class="input-group">
-                    <label>Повторите пароль</label>
-                    <input type="password" id="confirmNewPassword" placeholder="Повторите пароль">
-                </div>
-                
-                <div id="newPasswordError" class="error-message"></div>
-                
-                <button class="btn" id="changePasswordBtn">Сменить пароль</button>
-                <button class="btn btn-secondary" id="backToCodeBtn">Назад</button>
-            </div>
+            
+            <div id="recoveryError" class="error-message"></div>
+            
+            <button class="btn" id="sendRecoveryBtn">Отправить инструкции</button>
+            <button class="btn btn-secondary" id="backToLoginBtn">Вернуться</button>
         </div>
     </div>
 
-   <script>
-// Глобальная переменная для хранения ника
-let playerName = '';
+    <script>
+        // Глобальная переменная для хранения ника
+        let playerName = '';
 
-// Функция для отправки отладочных сообщений
-function debug(message) {
-    if (typeof cef !== 'undefined') {
-        cef.emit('debug_message', message);
-    } else {
-        console.log('Debug:', message); // Для локального теста
-    }
-}
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    initPlayerName();
-    initAuthSystem();
-    setupCefListeners();
-});
-
-// Получение ника игрока
-function initPlayerName() {
-    if (typeof cef !== 'undefined') {
-        cef.on('set_name', function(name) {
-            if (name && name.trim() !== '') {
-                playerName = name.trim();
-                updatePlayerName(playerName);
-                debug('Ник успешно получен: ' + playerName);
+        // Функция для отправки отладочных сообщений
+        function debug(message) {
+            if (typeof cef !== 'undefined') {
+                cef.emit('debug_message', message);
+            } else {
+                console.log('Debug:', message); // Для локального теста
             }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initPlayerName();
+            initAuthSystem();
+            setupCefListeners();
         });
-        cef.emit('get_name');
-        debug('Запрос ника отправлен');
-    } else {
-        playerName = 'TestPlayer';
-        updatePlayerName(playerName);
-        debug('CEF не доступен, используется тестовый ник: ' + playerName);
-    }
-}
 
-// Обновление полей с ником
-function updatePlayerName(name) {
-    const usernameField = document.getElementById('username');
-    const regUsernameField = document.getElementById('regUsername');
+        // Получение ника игрока
+        function initPlayerName() {
+            if (typeof cef !== 'undefined') {
+                cef.on('set_name', function(name) {
+                    if (name && name.trim() !== '') {
+                        playerName = name.trim();
+                        updatePlayerName(playerName);
+                        debug('Ник успешно получен: ' + playerName);
+                    }
+                });
+                cef.emit('get_name');
+                debug('Запрос ника отправлен');
+            } else {
+                playerName = 'TestPlayer';
+                updatePlayerName(playerName);
+                debug('CEF не доступен, используется тестовый ник: ' + playerName);
+            }
+        }
 
-    if (usernameField) {
-        usernameField.value = name;
-        usernameField.placeholder = name;
-    }
+        // Обновление полей с ником
+        function updatePlayerName(name) {
+            const usernameField = document.getElementById('username');
+            const regUsernameField = document.getElementById('regUsername');
+            
+            if (usernameField) {
+                usernameField.value = name;
+                usernameField.placeholder = name;
+            }
+            
+            if (regUsernameField) {
+                regUsernameField.value = name;
+                regUsernameField.placeholder = name;
+            }
+        }
 
-    if (regUsernameField) {
-        regUsernameField.value = name;
-        regUsernameField.placeholder = name;
-    }
-}
+        // Настройка обработчиков событий от сервера
+        function setupCefListeners() {
+            if (typeof cef !== 'undefined') {
+                cef.on('account_status', (status) => {
+                    debug('Получен account_status: ' + status);
+                    const loginForm = document.getElementById('loginForm');
+                    const registerForm = document.getElementById('registerForm');
+                    if (status === 'registered' && registerForm.style.display !== 'none') {
+                        switchForm(registerForm, loginForm);
+                        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                        debug('Переключение на форму входа');
+                    } else if (status === 'not_registered' && loginForm.style.display !== 'none') {
+                        switchForm(loginForm, registerForm);
+                        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+                        debug('Переключение на форму регистрации');
+                    } else {
+                        debug('Состояние формы не требует переключения');
+                    }
+                });
 
-// === ИСПРАВЛЕННАЯ ФУНКЦИЯ ===
-function setupCefListeners() {
-    if (typeof cef !== 'undefined') {
+                cef.on('auth_success', () => {
+                    debug('Успешная авторизация');
+                    fadeOutAndClose();
+                });
 
-        cef.on('account_status', (status) => {
-            debug('Получен account_status: ' + status);
+                cef.on('auth_error', (message) => {
+                    showError(message, 'login');
+                    debug('Ошибка авторизации: ' + message);
+                });
+
+                cef.on('register_success', () => {
+                    debug('Успешная регистрация');
+                    switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
+                    document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                    showError('Регистрация успешна! Теперь войдите', 'login');
+                });
+
+                cef.on('register_error', (message) => {
+                    showError(message, 'register');
+                    debug('Ошибка регистрации: ' + message);
+                });
+
+                cef.on('recovery_success', (message) => {
+                    debug('Инструкции по восстановлению отправлены');
+                    showError(message, 'recovery');
+                    setTimeout(() => {
+                        switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+                        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                    }, 3000);
+                });
+
+                cef.on('recovery_error', (message) => {
+                    showError(message, 'recovery');
+                    debug('Ошибка восстановления: ' + message);
+                });
+            }
+        }
+
+        // Инициализация системы авторизации
+        function initAuthSystem() {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
-            const title = document.getElementById('formTitle');
+            const recoveryForm = document.getElementById('recoveryForm');
 
-            if (status === 'registered') {
-                switchForm(registerForm, loginForm);
-                title.textContent = 'Войдите в свой аккаунт';
-            } else if (status === 'not_registered') {
+            document.getElementById('showRegisterBtn').addEventListener('click', (e) => {
+                e.preventDefault();
                 switchForm(loginForm, registerForm);
-                title.textContent = 'Создайте аккаунт';
-            }
-        });
+                document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+                debug('Переключение на форму регистрации');
+            });
 
-        cef.on('auth_success', () => {
-            debug('Успешная авторизация');
-            fadeOutAndClose();
-        });
-
-        cef.on('auth_error', (message) => {
-            showError(message, 'login');
-            debug('Ошибка авторизации: ' + message);
-        });
-
-        cef.on('register_success', () => {
-            debug('Успешная регистрация');
-            switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-            showError('Регистрация успешна! Теперь войдите', 'login');
-        });
-
-        cef.on('register_error', (message) => {
-            showError(message, 'register');
-            debug('Ошибка регистрации: ' + message);
-        });
-
-        cef.on('recovery_success', (message) => {
-            debug('Инструкции по восстановлению отправлены');
-            showError(message, 'recovery');
-            setTimeout(() => {
-                switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+            document.getElementById('showLoginBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(registerForm, loginForm);
                 document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-            }, 3000);
-        });
+                debug('Переключение на форму логина');
+            });
 
-        cef.on('recovery_error', (message) => {
-            showError(message, 'recovery');
-            debug('Ошибка восстановления: ' + message);
-        });
-    }
-}
+            document.getElementById('recoveryLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(loginForm, recoveryForm);
+                document.getElementById('formTitle').textContent = 'Восстановление пароля';
+                debug('Переключение на форму восстановления');
+            });
 
-// Инициализация системы авторизации
-function initAuthSystem() {
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    const recoveryForm = document.getElementById('recoveryForm');
+            document.getElementById('backToLoginBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(recoveryForm, loginForm);
+                document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                debug('Возврат к форме логина');
+            });
 
-    document.getElementById('showRegisterBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchForm(loginForm, registerForm);
-        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
-        debug('Переключение на форму регистрации');
-    });
+            document.getElementById('loginBtn').addEventListener('click', login);
+            document.getElementById('registerBtn').addEventListener('click', register);
+            document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
 
-    document.getElementById('showLoginBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchForm(registerForm, loginForm);
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        debug('Переключение на форму логина');
-    });
-
-    document.getElementById('recoveryLink').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchForm(loginForm, recoveryForm);
-        document.getElementById('formTitle').textContent = 'Восстановление пароля';
-        debug('Переключение на форму восстановления');
-    });
-
-    document.getElementById('backToLoginBtn').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchForm(recoveryForm, loginForm);
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        debug('Возврат к форме логина');
-    });
-
-    document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('registerBtn').addEventListener('click', register);
-    document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
-
-    document.getElementById('password').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
-    });
-    document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') register();
-    });
-    document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendRecovery();
-    });
-}
-
-// Переключение между формами с анимацией
-function switchForm(from, to) {
-    from.style.opacity = '0';
-    from.style.transform = 'translateX(-30px)';
-
-    setTimeout(() => {
-        from.style.display = 'none';
-        to.style.display = 'block';
-
-        setTimeout(() => {
-            to.style.opacity = '1';
-            to.style.transform = 'translateX(0)';
-        }, 50);
-    }, 300);
-}
-
-// Отображение ошибки
-function showError(message, formType = 'login') {
-    const errorElement = document.getElementById(`${formType}Error`);
-    errorElement.textContent = message;
-    errorElement.classList.add('show');
-
-    setTimeout(() => {
-        errorElement.classList.remove('show');
-    }, 5000);
-}
-
-// Логика авторизации
-function login() {
-    const password = document.getElementById('password').value.trim();
-
-    if (!password || password.length < 8 || /\s/.test(password)) {
-        showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'login');
-        debug('Ошибка: Неверный формат пароля');
-        return;
-    }
-
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_login', password);
-        debug('Отправлено auth_login с паролем');
-    } else {
-        debug('Тестовая авторизация успешна');
-        fadeOutAndClose();
-    }
-}
-
-// Логика регистрации
-function register() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('regPassword').value.trim();
-    const confirmPassword = document.getElementById('confirmPassword').value.trim();
-
-    debug('Нажата кнопка регистрации');
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showError('Введите корректный email', 'register');
-        debug('Ошибка: Некорректный email: ' + email);
-        return;
-    }
-
-    if (!password || password.length < 8 || /\s/.test(password)) {
-        showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'register');
-        debug('Ошибка: Неверный формат пароля');
-        return;
-    }
-
-    if (password !== confirmPassword) {
-        showError('Пароли не совпадают', 'register');
-        debug('Ошибка: Пароли не совпадают');
-        return;
-    }
-
-    const data = email + "|" + password;
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_register', data);
-        debug('Отправлено auth_register с данными: ' + data);
-    } else {
-        debug('Тестовая регистрация успешна');
-        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        showError('Регистрация успешна! Теперь войдите', 'login');
-    }
-}
-
-// Логика восстановления пароля
-function sendRecovery() {
-    const email = document.getElementById('recoveryEmail').value.trim();
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showError('Введите корректный email', 'recovery');
-        debug('Ошибка: Некорректный email: ' + email);
-        return;
-    }
-
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_recovery', email);
-        debug('Отправлено auth_recovery с email: ' + email);
-    } else {
-        debug('Тестовая отправка инструкций успешна');
-        showError('Инструкции отправлены на ваш email', 'recovery');
-        setTimeout(() => {
-            switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
-            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        }, 3000);
-    }
-}
-
-// Анимация закрытия браузера
-function fadeOutAndClose() {
-    const container = document.getElementById('authContainer');
-    container.style.animation = 'fadeOut 0.5s forwards';
-
-    setTimeout(() => {
-        if (typeof cef !== 'undefined') {
-            cef.emit('ExitCef', '');
-            debug('Отправлено ExitCef');
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') register();
+            });
+            document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendRecovery();
+            });
         }
-    }, 500);
-}
-</script>
 
+        // Переключение между формами с анимацией
+        function switchForm(from, to) {
+            from.style.opacity = '0';
+            from.style.transform = 'translateX(-30px)';
+            
+            setTimeout(() => {
+                from.style.display = 'none';
+                to.style.display = 'block';
+                
+                setTimeout(() => {
+                    to.style.opacity = '1';
+                    to.style.transform = 'translateX(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Отображение ошибки
+        function showError(message, formType = 'login') {
+            const errorElement = document.getElementById(`${formType}Error`);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            
+            setTimeout(() => {
+                errorElement.classList.remove('show');
+            }, 5000);
+        }
+
+        // Логика авторизации
+        function login() {
+            const password = document.getElementById('password').value.trim();
+            
+            if (!password || password.length < 8 || /\s/.test(password)) {
+                showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'login');
+                debug('Ошибка: Неверный формат пароля');
+                return;
+            }
+            
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_login', password);
+                debug('Отправлено auth_login с паролем');
+            } else {
+                debug('Тестовая авторизация успешна');
+                fadeOutAndClose();
+            }
+        }
+
+        // Логика регистрации
+        function register() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            debug('Нажата кнопка регистрации');
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Введите корректный email', 'register');
+                debug('Ошибка: Некорректный email: ' + email);
+                return;
+            }
+            
+            if (!password || password.length < 8 || /\s/.test(password)) {
+                showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'register');
+                debug('Ошибка: Неверный формат пароля');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Пароли не совпадают', 'register');
+                debug('Ошибка: Пароли не совпадают');
+                return;
+            }
+            
+            const data = email + "|" + password;
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_register', data);
+                debug('Отправлено auth_register с данными: ' + data);
+            } else {
+                debug('Тестовая регистрация успешна');
+                switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
+                document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                showError('Регистрация успешна! Теперь войдите', 'login');
+            }
+        }
+
+        // Логика восстановления пароля
+        function sendRecovery() {
+            const email = document.getElementById('recoveryEmail').value.trim();
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Введите корректный email', 'recovery');
+                debug('Ошибка: Некорректный email: ' + email);
+                return;
+            }
+            
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_recovery', email);
+                debug('Отправлено auth_recovery с email: ' + email);
+            } else {
+                debug('Тестовая отправка инструкций успешна');
+                showError('Инструкции отправлены на ваш email', 'recovery');
+                setTimeout(() => {
+                    switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+                    document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                }, 3000);
+            }
+        }
+
+        // Анимация закрытия браузера
+        function fadeOutAndClose() {
+            const container = document.getElementById('authContainer');
+            container.style.animation = 'fadeOut 0.5s forwards';
+            
+            setTimeout(() => {
+                if (typeof cef !== 'undefined') {
+                    cef.emit('ExitCef', '');
+                    debug('Отправлено ExitCef');
+                }
+            }, 500);
+        }
+    </script>
 </body>
 </html>
