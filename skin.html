@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Выбор скина</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: transparent;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-align: center;
+      width: 400px;
+      color: white;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      animation: fadeIn 0.5s ease;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      color: #00eaff;
+    }
+
+    p {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .skin-id {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .nav-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-button,
+    .confirm-button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-button {
+      background: #00b7eb;
+      color: white;
+    }
+
+    .nav-button:hover {
+      background: #009ac2;
+      transform: scale(1.05);
+    }
+
+    .confirm-button {
+      background: #00c853;
+      color: white;
+    }
+
+    .confirm-button:hover {
+      background: #00a147;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>NOBARA RPG</h1>
+    <p>Выберите скин персонажа</p>
+    <div class="skin-id">ID: <span id="skinId">0</span></div>
+
+    <div class="nav-group">
+      <button class="nav-button" id="prevBtn">&laquo;</button>
+      <button class="confirm-button" id="confirmBtn">Подтвердить</button>
+      <button class="nav-button" id="nextBtn">&raquo;</button>
+    </div>
+  </div>
+
+  <script>
+    let skinList = [];
+    let currentIndex = 0;
+
+    function updateSkinDisplay() {
+      const skinId = skinList[currentIndex];
+      document.getElementById('skinId').textContent = skinId;
+      if (typeof cef !== 'undefined') {
+        cef.emit('preview_skin', skinId.toString());
+      }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + skinList.length) % skinList.length;
+      updateSkinDisplay();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % skinList.length;
+      updateSkinDisplay();
+    });
+
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      const selectedSkin = skinList[currentIndex];
+      if (typeof cef !== 'undefined') {
+        cef.emit('skin_selected', selectedSkin.toString());
+      }
+    });
+
+    if (typeof cef !== 'undefined') {
+      cef.on('set_skin_list', (data) => {
+        skinList = JSON.parse(data);
+        currentIndex = 0;
+        updateSkinDisplay();
+      });
+      cef.emit('get_skin_list');
+    } else {
+      skinList = [0, 1, 2, 3, 4, 5];
+      updateSkinDisplay();
+    }
+  </script>
+
+</body>
+</html>
