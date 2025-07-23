@@ -409,6 +409,28 @@
 
         // Настройка обработчиков событий от сервера
         function setupCefListeners() {
+cef.on('account_status', (status) => {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const formTitle = document.getElementById('formTitle');
+
+    if (status === 'registered') {
+        // Показать логин
+        registerForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        formTitle.textContent = 'Войдите в свой аккаунт';
+        debug('Показана форма логина');
+    } else if (status === 'not_registered') {
+        // Показать регистрацию
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        formTitle.textContent = 'Создайте аккаунт';
+        debug('Показана форма регистрации');
+    } else {
+        debug('Неизвестный статус аккаунта: ' + status);
+    }
+});
+
             if (typeof cef !== 'undefined') {
                 cef.on('auth_success', () => {
                     debug('Успешная авторизация');
