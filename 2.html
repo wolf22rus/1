@@ -352,11 +352,9 @@
         </div>
     </div>
 
-   <script>
-// Глобальная переменная для хранения ника
+  <script>
 let playerName = '';
 
-// Функция отладки
 function debug(msg) {
     if (typeof cef !== 'undefined') cef.emit('debug_message', msg);
     else console.log('[DEBUG]', msg);
@@ -364,43 +362,33 @@ function debug(msg) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initPlayerName();
-    setupFormEvents();
-    setupCefListeners();
+    initFormEvents();
+    initCefListeners();
 });
 
-// Получение ника
 function initPlayerName() {
     if (typeof cef !== 'undefined') {
         cef.on('set_name', (name) => {
             if (name && name.trim() !== '') {
                 playerName = name.trim();
-                updateUsernameFields(playerName);
-                debug('Ник получен: ' + playerName);
+                document.getElementById('username').value = playerName;
+                document.getElementById('regUsername').value = playerName;
             }
         });
         cef.emit('get_name');
-        debug('Запрос ника отправлен');
+        debug('Ник запрошен у клиента');
     } else {
         playerName = 'TestPlayer';
-        updateUsernameFields(playerName);
-        debug('CEF не найден, имя по умолчанию');
+        document.getElementById('username').value = playerName;
+        document.getElementById('regUsername').value = playerName;
+        debug('CEF не найден. Ник: TestPlayer');
     }
 }
 
-// Обновление всех полей с именем
-function updateUsernameFields(name) {
-    document.querySelectorAll('#username, #regUsername').forEach(el => {
-        el.value = name;
-        el.placeholder = name;
-    });
-}
-
-// Обработчики событий CEF
-function setupCefListeners() {
+function initCefListeners() {
     if (typeof cef !== 'undefined') {
-
         cef.on('account_status', (status) => {
-            debug('Получен account_status: ' + status);
+            debug('Получен статус аккаунта: ' + status);
             if (status === 'registered') {
                 switchToForm('login');
             } else if (status === 'not_registered') {
@@ -410,20 +398,17 @@ function setupCefListeners() {
 
         cef.on('auth_success', () => {
             debug('Успешная авторизация');
-            closeInterface();
+            closeUI();
         });
 
         cef.on('auth_error', (msg) => showError('login', msg));
-
         cef.on('register_error', (msg) => showError('register', msg));
-
         cef.on('register_success', () => {
-            showError('login', 'Регистрация успешна! Теперь войдите');
+            showError('login', 'Регистрация успешна! Войдите');
             switchToForm('login');
         });
 
         cef.on('recovery_error', (msg) => showError('recovery', msg));
-
         cef.on('recovery_success', (msg) => {
             showError('recovery', msg);
             setTimeout(() => switchToForm('login'), 3000);
@@ -431,63 +416,42 @@ function setupCefListeners() {
     }
 }
 
-// Обработка UI-событий
-function setupFormEvents() {
+function initFormEvents() {
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('registerBtn').addEventListener('click', register);
     document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
-
     document.getElementById('showRegisterBtn').addEventListener('click', () => switchToForm('register'));
     document.getElementById('showLoginBtn').addEventListener('click', () => switchToForm('login'));
     document.getElementById('recoveryLink').addEventListener('click', () => switchToForm('recovery'));
     document.getElementById('backToLoginBtn').addEventListener('click', () => switchToForm('login'));
-
-    document.getElementById('password').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
-    });
-
-    document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') register();
-    });
-
-    document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendRecovery();
-    });
 }
 
-// Переключение между формами
-function switchToForm(target) {
-    const forms = ['loginForm', 'registerForm', 'recoveryForm'];
-    const titles = {
+function switchToForm(type) {
+    const forms = {
+        login: 'loginForm',
+        register: 'registerForm',
+        recovery: 'recoveryForm'
+    };
+
+    Object.values(forms).forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
+
+    document.getElementById(forms[type]).style.display = 'flex';
+    document.getElementById('formTitle').textContent = {
         login: 'Войдите в свой аккаунт',
         register: 'Создайте аккаунт',
         recovery: 'Восстановление пароля'
-    };
-
-    forms.forEach(formId => {
-        const form = document.getElementById(formId);
-        if (formId === target + 'Form') {
-            form.style.display = 'flex';
-            setTimeout(() => form.style.opacity = '1', 50);
-        } else {
-            form.style.opacity = '0';
-            setTimeout(() => form.style.display = 'none', 300);
-        }
-    });
-
-    document.getElementById('formTitle').textContent = titles[target] || '';
+    }[type];
 }
 
-// Ошибки
-function showError(formType, message) {
-    const el = document.getElementById(`${formType}Error`);
-    if (!el) return;
-    el.textContent = message;
+function showError(form, msg) {
+    const el = document.getElementById(form + 'Error');
+    el.textContent = msg;
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-// Авторизация
 function login() {
     const password = document.getElementById('password').value.trim();
     if (!password || password.length < 8 || /\s/.test(password)) {
@@ -499,36 +463,31 @@ function login() {
     }
 }
 
-// Регистрация
 function register() {
     const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('regPassword').value.trim();
+    const pass = document.getElementById('regPassword').value.trim();
     const confirm = document.getElementById('confirmPassword').value.trim();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('register', 'Введите корректный email');
+        return showError('register', 'Некорректный email');
     }
-
-    if (password.length < 8 || /\s/.test(password)) {
+    if (pass.length < 8 || /\s/.test(pass)) {
         return showError('register', 'Пароль должен быть не менее 8 символов и без пробелов');
     }
-
-    if (password !== confirm) {
+    if (pass !== confirm) {
         return showError('register', 'Пароли не совпадают');
     }
 
-    const data = `${email}|${password}`;
     if (typeof cef !== 'undefined') {
-        cef.emit('auth_register', data);
+        cef.emit('auth_register', `${email}|${pass}`);
         debug('Отправлен auth_register');
     }
 }
 
-// Восстановление
 function sendRecovery() {
     const email = document.getElementById('recoveryEmail').value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('recovery', 'Введите корректный email');
+        return showError('recovery', 'Некорректный email');
     }
     if (typeof cef !== 'undefined') {
         cef.emit('auth_recovery', email);
@@ -536,8 +495,7 @@ function sendRecovery() {
     }
 }
 
-// Закрытие интерфейса
-function closeInterface() {
+function closeUI() {
     const container = document.getElementById('authContainer');
     container.style.animation = 'fadeOut 0.5s forwards';
     setTimeout(() => {
@@ -545,6 +503,7 @@ function closeInterface() {
     }, 500);
 }
 </script>
+
 
 </body>
 </html>
