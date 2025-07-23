@@ -352,154 +352,175 @@
         </div>
     </div>
 
-    <script>
+   <script>
 // Глобальная переменная для хранения ника
 let playerName = '';
 
-// Отладочная функция
-function debug(msg) {
-    if (typeof cef !== 'undefined') cef.emit('debug_message', msg);
-    else console.log('[DEBUG]', msg);
+// Функция для отправки отладочных сообщений
+function debug(message) {
+    if (typeof cef !== 'undefined') {
+        cef.emit('debug_message', message);
+    } else {
+        console.log('Debug:', message); // Для локального теста
+    }
 }
 
-// При загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
     initPlayerName();
-    setupFormEvents();
+    initAuthSystem();
     setupCefListeners();
 });
 
-// Запрашиваем имя у CEF или задаём тестовое
+// Получение ника игрока
 function initPlayerName() {
     if (typeof cef !== 'undefined') {
-        cef.on('set_name', (name) => {
+        cef.on('set_name', function(name) {
             if (name && name.trim() !== '') {
                 playerName = name.trim();
-                updateUsernameFields(playerName);
-                debug('Ник получен: ' + playerName);
+                updatePlayerName(playerName);
+                debug('Ник успешно получен: ' + playerName);
             }
         });
         cef.emit('get_name');
         debug('Запрос ника отправлен');
     } else {
         playerName = 'TestPlayer';
-        updateUsernameFields(playerName);
-        debug('CEF не найден, имя по умолчанию');
+        updatePlayerName(playerName);
+        debug('CEF не доступен, используется тестовый ник: ' + playerName);
     }
 }
 
-// Устанавливаем ник в поля
-function updateUsernameFields(name) {
-    document.querySelectorAll('input[id="username"], input[id="regUsername"]').forEach(el => {
-        el.value = name;
-        el.placeholder = name;
-    });
+// Обновление полей с ником
+function updatePlayerName(name) {
+    const usernameField = document.getElementById('username');
+    const regUsernameField = document.getElementById('regUsername');
+
+    if (usernameField) {
+        usernameField.value = name;
+        usernameField.placeholder = name;
+    }
+
+    if (regUsernameField) {
+        regUsernameField.value = name;
+        regUsernameField.placeholder = name;
+    }
 }
 
-// Подписки на CEF-события
+// === ИСПРАВЛЕННАЯ ФУНКЦИЯ ===
 function setupCefListeners() {
-    if (typeof cef === 'undefined') return;
+    if (typeof cef !== 'undefined') {
 
-    cef.on('account_status', (status) => {
-        debug('Получен account_status: ' + status);
+        cef.on('account_status', (status) => {
+            debug('Получен account_status: ' + status);
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const title = document.getElementById('formTitle');
 
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+            if (status === 'registered') {
+                switchForm(registerForm, loginForm);
+                title.textContent = 'Войдите в свой аккаунт';
+            } else if (status === 'not_registered') {
+                switchForm(loginForm, registerForm);
+                title.textContent = 'Создайте аккаунт';
+            }
+        });
 
-        if (status === 'registered') {
-            switchForm(registerForm, loginForm);
+        cef.on('auth_success', () => {
+            debug('Успешная авторизация');
+            fadeOutAndClose();
+        });
+
+        cef.on('auth_error', (message) => {
+            showError(message, 'login');
+            debug('Ошибка авторизации: ' + message);
+        });
+
+        cef.on('register_success', () => {
+            debug('Успешная регистрация');
+            switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
             document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        } else if (status === 'not_registered') {
-            switchForm(loginForm, registerForm);
-            document.getElementById('formTitle').textContent = 'Создайте аккаунт';
-        }
-    });
+            showError('Регистрация успешна! Теперь войдите', 'login');
+        });
 
-    cef.on('auth_success', () => {
-        debug('Успешная авторизация');
-        closeInterface();
-    });
+        cef.on('register_error', (message) => {
+            showError(message, 'register');
+            debug('Ошибка регистрации: ' + message);
+        });
 
-    cef.on('auth_error', (msg) => {
-        debug('Ошибка авторизации: ' + msg);
-        showError('login', msg);
-    });
+        cef.on('recovery_success', (message) => {
+            debug('Инструкции по восстановлению отправлены');
+            showError(message, 'recovery');
+            setTimeout(() => {
+                switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+                document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+            }, 3000);
+        });
 
-    cef.on('register_success', () => {
-        debug('Успешная регистрация');
-        showError('login', 'Регистрация успешна! Теперь войдите');
-        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    cef.on('register_error', (msg) => {
-        debug('Ошибка регистрации: ' + msg);
-        showError('register', msg);
-    });
-
-    cef.on('recovery_success', (msg) => {
-        debug('Успешное восстановление: ' + msg);
-        showError('recovery', msg);
-        setTimeout(() => {
-            switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
-            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        }, 3000);
-    });
-
-    cef.on('recovery_error', (msg) => {
-        debug('Ошибка восстановления: ' + msg);
-        showError('recovery', msg);
-    });
+        cef.on('recovery_error', (message) => {
+            showError(message, 'recovery');
+            debug('Ошибка восстановления: ' + message);
+        });
+    }
 }
 
-// Назначение обработчиков кнопок и полей
-function setupFormEvents() {
+// Инициализация системы авторизации
+function initAuthSystem() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const recoveryForm = document.getElementById('recoveryForm');
+
+    document.getElementById('showRegisterBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchForm(loginForm, registerForm);
+        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+        debug('Переключение на форму регистрации');
+    });
+
+    document.getElementById('showLoginBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchForm(registerForm, loginForm);
+        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+        debug('Переключение на форму логина');
+    });
+
+    document.getElementById('recoveryLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchForm(loginForm, recoveryForm);
+        document.getElementById('formTitle').textContent = 'Восстановление пароля';
+        debug('Переключение на форму восстановления');
+    });
+
+    document.getElementById('backToLoginBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchForm(recoveryForm, loginForm);
+        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+        debug('Возврат к форме логина');
+    });
+
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('registerBtn').addEventListener('click', register);
     document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
 
-    document.getElementById('showRegisterBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('loginForm'), document.getElementById('registerForm'));
-        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
-    });
-
-    document.getElementById('showLoginBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    document.getElementById('recoveryLink').addEventListener('click', () => {
-        switchForm(document.getElementById('loginForm'), document.getElementById('recoveryForm'));
-        document.getElementById('formTitle').textContent = 'Восстановление пароля';
-    });
-
-    document.getElementById('backToLoginBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    // Enter key
     document.getElementById('password').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
     });
-
     document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') register();
     });
-
     document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendRecovery();
     });
 }
 
-// Плавное переключение форм
+// Переключение между формами с анимацией
 function switchForm(from, to) {
     from.style.opacity = '0';
     from.style.transform = 'translateX(-30px)';
 
     setTimeout(() => {
         from.style.display = 'none';
-        to.style.display = 'flex';
+        to.style.display = 'block';
 
         setTimeout(() => {
             to.style.opacity = '1';
@@ -508,80 +529,110 @@ function switchForm(from, to) {
     }, 300);
 }
 
-// Показ ошибки
-function showError(type, msg) {
-    const el = document.getElementById(`${type}Error`);
-    if (!el) return;
+// Отображение ошибки
+function showError(message, formType = 'login') {
+    const errorElement = document.getElementById(`${formType}Error`);
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
 
-    el.textContent = msg;
-    el.classList.add('show');
-
-    setTimeout(() => el.classList.remove('show'), 5000);
+    setTimeout(() => {
+        errorElement.classList.remove('show');
+    }, 5000);
 }
 
-// Авторизация
+// Логика авторизации
 function login() {
     const password = document.getElementById('password').value.trim();
 
     if (!password || password.length < 8 || /\s/.test(password)) {
-        return showError('login', 'Пароль должен быть не менее 8 символов и без пробелов');
+        showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'login');
+        debug('Ошибка: Неверный формат пароля');
+        return;
     }
 
     if (typeof cef !== 'undefined') {
         cef.emit('auth_login', password);
-        debug('Отправлен auth_login');
+        debug('Отправлено auth_login с паролем');
+    } else {
+        debug('Тестовая авторизация успешна');
+        fadeOutAndClose();
     }
 }
 
-// Регистрация
+// Логика регистрации
 function register() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('regPassword').value.trim();
-    const confirm = document.getElementById('confirmPassword').value.trim();
+    const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('register', 'Введите корректный email');
+    debug('Нажата кнопка регистрации');
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('Введите корректный email', 'register');
+        debug('Ошибка: Некорректный email: ' + email);
+        return;
     }
 
-    if (password.length < 8 || /\s/.test(password)) {
-        return showError('register', 'Пароль должен быть не менее 8 символов и без пробелов');
+    if (!password || password.length < 8 || /\s/.test(password)) {
+        showError('Пароль должен быть не менее 8 символов и не содержать пробелов', 'register');
+        debug('Ошибка: Неверный формат пароля');
+        return;
     }
 
-    if (password !== confirm) {
-        return showError('register', 'Пароли не совпадают');
+    if (password !== confirmPassword) {
+        showError('Пароли не совпадают', 'register');
+        debug('Ошибка: Пароли не совпадают');
+        return;
     }
 
-    const data = `${email}|${password}`;
+    const data = email + "|" + password;
     if (typeof cef !== 'undefined') {
         cef.emit('auth_register', data);
-        debug('Отправлен auth_register');
+        debug('Отправлено auth_register с данными: ' + data);
+    } else {
+        debug('Тестовая регистрация успешна');
+        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
+        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+        showError('Регистрация успешна! Теперь войдите', 'login');
     }
 }
 
-// Восстановление пароля
+// Логика восстановления пароля
 function sendRecovery() {
     const email = document.getElementById('recoveryEmail').value.trim();
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('recovery', 'Введите корректный email');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('Введите корректный email', 'recovery');
+        debug('Ошибка: Некорректный email: ' + email);
+        return;
     }
 
     if (typeof cef !== 'undefined') {
         cef.emit('auth_recovery', email);
-        debug('Отправлен auth_recovery');
+        debug('Отправлено auth_recovery с email: ' + email);
+    } else {
+        debug('Тестовая отправка инструкций успешна');
+        showError('Инструкции отправлены на ваш email', 'recovery');
+        setTimeout(() => {
+            switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+        }, 3000);
     }
 }
 
-// Закрытие интерфейса
-function closeInterface() {
+// Анимация закрытия браузера
+function fadeOutAndClose() {
     const container = document.getElementById('authContainer');
     container.style.animation = 'fadeOut 0.5s forwards';
+
     setTimeout(() => {
         if (typeof cef !== 'undefined') {
             cef.emit('ExitCef', '');
+            debug('Отправлено ExitCef');
         }
     }, 500);
 }
 </script>
+
 </body>
 </html>
