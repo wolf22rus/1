@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Выбор пола</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: transparent;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-container {
+            width: 380px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.6s ease forwards;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .logo p {
+            color: #bbb;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            background: #00b7eb;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        .btn:hover {
+            transform: scale(1.03);
+            background: #0097c7;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container" id="genderContainer">
+        <div class="logo">
+            <h1>NOBARA RPG</h1>
+            <p>Выберите пол персонажа</p>
+        </div>
+        <div class="btn-group">
+            <button class="btn" id="genderMaleBtn">Мужской</button>
+            <button class="btn" id="genderFemaleBtn">Женский</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('genderMaleBtn').addEventListener('click', () => {
+            if (typeof cef !== 'undefined') cef.emit('gender_select', 'male');
+        });
+        document.getElementById('genderFemaleBtn').addEventListener('click', () => {
+            if (typeof cef !== 'undefined') cef.emit('gender_select', 'female');
+        });
+    </script>
+</body>
+</html>
