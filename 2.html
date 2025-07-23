@@ -352,7 +352,7 @@
         </div>
     </div>
 
-    <script>
+   <script>
 // Глобальная переменная для хранения ника
 let playerName = '';
 
@@ -368,6 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupCefListeners();
 });
 
+// Получение ника
 function initPlayerName() {
     if (typeof cef !== 'undefined') {
         cef.on('set_name', (name) => {
@@ -386,44 +387,51 @@ function initPlayerName() {
     }
 }
 
+// Обновление всех полей с именем
 function updateUsernameFields(name) {
-    document.querySelectorAll('input[id="username"], input[id="regUsername"]').forEach(el => {
+    document.querySelectorAll('#username, #regUsername').forEach(el => {
         el.value = name;
         el.placeholder = name;
     });
 }
 
+// Обработчики событий CEF
 function setupCefListeners() {
-    if (typeof cef === 'undefined') return;
+    if (typeof cef !== 'undefined') {
 
-    cef.on('account_status', (status) => {
-        debug('account_status: ' + status);
-        if (status === 'registered') {
+        cef.on('account_status', (status) => {
+            debug('Получен account_status: ' + status);
+            if (status === 'registered') {
+                switchToForm('login');
+            } else if (status === 'not_registered') {
+                switchToForm('register');
+            }
+        });
+
+        cef.on('auth_success', () => {
+            debug('Успешная авторизация');
+            closeInterface();
+        });
+
+        cef.on('auth_error', (msg) => showError('login', msg));
+
+        cef.on('register_error', (msg) => showError('register', msg));
+
+        cef.on('register_success', () => {
+            showError('login', 'Регистрация успешна! Теперь войдите');
             switchToForm('login');
-        } else if (status === 'not_registered') {
-            switchToForm('register');
-        }
-    });
+        });
 
-    cef.on('auth_success', () => {
-        debug('Успешная авторизация');
-        closeInterface();
-    });
+        cef.on('recovery_error', (msg) => showError('recovery', msg));
 
-    cef.on('auth_error', (msg) => showError('login', msg));
-    cef.on('register_error', (msg) => showError('register', msg));
-    cef.on('register_success', () => {
-        showError('login', 'Регистрация успешна! Теперь войдите');
-        switchToForm('login');
-    });
-
-    cef.on('recovery_error', (msg) => showError('recovery', msg));
-    cef.on('recovery_success', (msg) => {
-        showError('recovery', msg);
-        setTimeout(() => switchToForm('login'), 3000);
-    });
+        cef.on('recovery_success', (msg) => {
+            showError('recovery', msg);
+            setTimeout(() => switchToForm('login'), 3000);
+        });
+    }
 }
 
+// Обработка UI-событий
 function setupFormEvents() {
     document.getElementById('loginBtn').addEventListener('click', login);
     document.getElementById('registerBtn').addEventListener('click', register);
@@ -434,18 +442,20 @@ function setupFormEvents() {
     document.getElementById('recoveryLink').addEventListener('click', () => switchToForm('recovery'));
     document.getElementById('backToLoginBtn').addEventListener('click', () => switchToForm('login'));
 
-    // Enter key handling
     document.getElementById('password').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') login();
     });
+
     document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') register();
     });
+
     document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendRecovery();
     });
 }
 
+// Переключение между формами
 function switchToForm(target) {
     const forms = ['loginForm', 'registerForm', 'recoveryForm'];
     const titles = {
@@ -468,6 +478,7 @@ function switchToForm(target) {
     document.getElementById('formTitle').textContent = titles[target] || '';
 }
 
+// Ошибки
 function showError(formType, message) {
     const el = document.getElementById(`${formType}Error`);
     if (!el) return;
@@ -476,7 +487,7 @@ function showError(formType, message) {
     setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-// Логин
+// Авторизация
 function login() {
     const password = document.getElementById('password').value.trim();
     if (!password || password.length < 8 || /\s/.test(password)) {
@@ -533,6 +544,7 @@ function closeInterface() {
         if (typeof cef !== 'undefined') cef.emit('ExitCef', '');
     }, 500);
 }
-    </script>
+</script>
+
 </body>
 </html>
