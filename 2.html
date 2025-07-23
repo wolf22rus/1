@@ -1,145 +1,538 @@
-
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Nobara RPG — Авторизация</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Nobara RPG - Авторизация</title>
     <style>
-        body {
-            background-color: transparent;
+        /* Основные стили */
+        * {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .auth-container {
+        
+        body {
+            background-color: transparent; /* Как в спидометре */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .blur-overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 360px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
         }
-        .auth-container h2 {
+        
+        .auth-container {
+            position: relative;
+            width: 380px;
+            background: rgba(0, 0, 0, 0.5); /* Как в спидометре */
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            overflow: hidden;
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,77,77,0.1), rgba(0,183,235,0.1), rgba(0,255,0,0.1)); /* Цвета спидометра */
+            transform: rotate(45deg);
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+            background-size: 400% 400%;
+        }
+        
+        .logo {
             text-align: center;
-            margin-bottom: 20px;
-            color: #00ffaa;
+            margin-bottom: 30px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            background: #00b7eb;
+        
+        .logo h1 {
             color: white;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff4d4d, #00b7eb, #00ff00); /* Цвета спидометра */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientText 5s linear infinite;
         }
-        #registerForm, #recoveryForm {
-            display: none;
+        
+        .logo p {
+            color: #bbb; /* Как второстепенный текст в спидометре */
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #bbb; /* Как в спидометре */
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff; /* Белый текст */
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: rgba(0, 183, 235, 0.5); /* Голубой из спидометра */
+            background: rgba(0, 183, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 183, 235, 0.2);
+        }
+        
+        .btn {
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            background: #00b7eb; /* Голубой из спидометра */
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 183, 235, 0.3); /* Голубой из спидометра */
+            background: #0097c7; /* Чуть темнее голубого */
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #bbb; /* Как второстепенный текст в спидометре */
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 183, 235, 0.1); /* Голубой из спидометра */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #bbb; /* Как в спидометре */
+            font-size: 13px;
+        }
+        
+        .form-footer a {
+            color: #00b7eb; /* Голубой из спидометра */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .form-footer a:hover {
+            color: #0097c7; /* Чуть темнее голубого */
+        }
+        
+        .error-message {
+            color: #ff4d4d; /* Красный из спидометра */
+            font-size: 13px;
+            margin-top: 5px;
+            text-align: center;
+            opacity: 0;
+            height: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        /* Стили для полей ввода кода */
+        .code-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .code-inputs input {
+            width: 40px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .code-inputs input:focus {
+            outline: none;
+            border-color: rgba(0, 183, 235, 0.5);
+            background: rgba(0, 183, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 183, 235, 0.2);
+        }
+        
+        /* Анимации */
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            to { opacity: 0; transform: scale(0.9); }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .auth-container {
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            .code-inputs input {
+                width: 35px;
+                height: 45px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <h2>NOBARA RPG</h2>
-        <p id="formTitle">Войдите в аккаунт</p>
-        
-        <div id="loginForm">
-            <div class="form-group">
-                <input type="text" id="username" disabled placeholder="Имя">
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Пароль">
-            </div>
-            <div class="form-group">
-                <button onclick="login()">Войти</button>
-            </div>
-            <button onclick="switchTo('register')">Создать аккаунт</button>
+    <div class="blur-overlay"></div>
+    
+    <div class="auth-container" id="authContainer">
+        <div class="logo">
+            <h1>NOBARA RPG</h1>
+            <p id="formTitle">Войдите в свой аккаунт</p>
         </div>
-
-        <div id="registerForm">
-            <div class="form-group">
-                <input type="text" id="regUsername" disabled placeholder="Имя">
+        
+        <div id="loginForm" class="auth-form">
+            <div class="input-group">
+                <label>Имя пользователя</label>
+                <input type="text" id="username" disabled="disabled" value="TestPlayer">
             </div>
-            <div class="form-group">
-                <input type="email" id="email" placeholder="Email">
+            
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="password" placeholder="Введите ваш пароль">
             </div>
-            <div class="form-group">
-                <input type="password" id="regPassword" placeholder="Пароль">
+            
+            <div id="loginError" class="error-message"></div>
+            
+            <button class="btn" id="loginBtn">Войти</button>
+            <button class="btn btn-secondary" id="showRegisterBtn">Создать аккаунт</button>
+            
+            <div class="form-footer">
+                Забыли пароль? <a href="#" id="recoveryLink">Восстановить</a>
             </div>
-            <div class="form-group">
+        </div>
+        
+        <div id="registerForm" class="auth-form" style="display: none;">
+            <div class="input-group">
+                <label>Имя пользователя</label>
+                <input type="text" id="regUsername" disabled="disabled" value="TestPlayer">
+            </div>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Ваш email">
+            </div>
+            
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="regPassword" placeholder="Не менее 6 символов">
+            </div>
+            
+            <div class="input-group">
+                <label>Подтвердите пароль</label>
                 <input type="password" id="confirmPassword" placeholder="Повторите пароль">
             </div>
-            <div class="form-group">
-                <button onclick="register()">Зарегистрироваться</button>
+            
+            <div id="registerError" class="error-message"></div>
+            
+            <button class="btn" id="registerBtn">Зарегистрироваться</button>
+            <button class="btn btn-secondary" id="showLoginBtn">Уже есть аккаунт</button>
+        </div>
+
+        <div id="recoveryForm" class="auth-form" style="display: none;">
+            <div id="emailStep">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="recoveryEmail" placeholder="Ваш email">
+                </div>
+                
+                <div id="recoveryError" class="error-message"></div>
+                
+                <button class="btn" id="sendCodeBtn">Отправить код</button>
+                <button class="btn btn-secondary" id="backToLoginBtn">Вернуться</button>
             </div>
-            <button onclick="switchTo('login')">Уже есть аккаунт</button>
+
+            <div id="codeStep" style="display: none;">
+                <div class="input-group">
+                    <label>Введите 6-значный код</label>
+                    <div class="code-inputs">
+                        <input type="text" maxlength="1" class="code-input" id="code1">
+                        <input type="text" maxlength="1" class="code-input" id="code2">
+                        <input type="text" maxlength="1" class="code-input" id="code3">
+                        <input type="text" maxlength="1" class="code-input" id="code4">
+                        <input type="text" maxlength="1" class="code-input" id="code5">
+                        <input type="text" maxlength="1" class="code-input" id="code6">
+                    </div>
+                </div>
+                
+                <div id="codeError" class="error-message"></div>
+                
+                <button class="btn" id="verifyCodeBtn">Подтвердить код</button>
+                <button class="btn btn-secondary" id="backToEmailBtn">Назад</button>
+            </div>
+
+            <div id="newPasswordStep" style="display: none;">
+                <div class="input-group">
+                    <label>Введите новый пароль</label>
+                    <input type="password" id="newPassword" placeholder="Не менее 6 символов">
+                </div>
+                
+                <div class="input-group">
+                    <label>Повторите пароль</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Повторите пароль">
+                </div>
+                
+                <div id="newPasswordError" class="error-message"></div>
+                
+                <button class="btn" id="changePasswordBtn">Сменить пароль</button>
+                <button class="btn btn-secondary" id="backToCodeBtn">Назад</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let playerName = '';
+// Глобальная переменная для хранения ника
+let playerName = '';
 
-        function switchTo(form) {
-            document.getElementById('loginForm').style.display = (form === 'login') ? 'block' : 'none';
-            document.getElementById('registerForm').style.display = (form === 'register') ? 'block' : 'none';
-            document.getElementById('formTitle').textContent = (form === 'login') ? 'Войдите в аккаунт' : 'Создайте аккаунт';
+// Функция отладки
+function debug(msg) {
+    if (typeof cef !== 'undefined') cef.emit('debug_message', msg);
+    else console.log('[DEBUG]', msg);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initPlayerName();
+    setupFormEvents();
+    setupCefListeners();
+});
+
+function initPlayerName() {
+    if (typeof cef !== 'undefined') {
+        cef.on('set_name', (name) => {
+            if (name && name.trim() !== '') {
+                playerName = name.trim();
+                updateUsernameFields(playerName);
+                debug('Ник получен: ' + playerName);
+            }
+        });
+        cef.emit('get_name');
+        debug('Запрос ника отправлен');
+    } else {
+        playerName = 'TestPlayer';
+        updateUsernameFields(playerName);
+        debug('CEF не найден, имя по умолчанию');
+    }
+}
+
+function updateUsernameFields(name) {
+    document.querySelectorAll('input[id="username"], input[id="regUsername"]').forEach(el => {
+        el.value = name;
+        el.placeholder = name;
+    });
+}
+
+function setupCefListeners() {
+    if (typeof cef === 'undefined') return;
+
+    cef.on('account_status', (status) => {
+        debug('account_status: ' + status);
+        if (status === 'registered') {
+            switchToForm('login');
+        } else if (status === 'not_registered') {
+            switchToForm('register');
         }
+    });
 
-        function updatePlayerName(name) {
-            playerName = name;
-            document.getElementById('username').value = name;
-            document.getElementById('regUsername').value = name;
-        }
+    cef.on('auth_success', () => {
+        debug('Успешная авторизация');
+        closeInterface();
+    });
 
-        if (typeof cef !== 'undefined') {
-            cef.on('set_name', function(name) {
-                updatePlayerName(name);
-                // Задержка перед отправкой get_status
-                setTimeout(() => {
-                    cef.emit('get_name');
-                }, 300);
-            });
+    cef.on('auth_error', (msg) => showError('login', msg));
+    cef.on('register_error', (msg) => showError('register', msg));
+    cef.on('register_success', () => {
+        showError('login', 'Регистрация успешна! Теперь войдите');
+        switchToForm('login');
+    });
 
-            cef.on('account_status', function(status) {
-                if (status === 'registered') {
-                    switchTo('login');
-                } else {
-                    switchTo('register');
-                }
-            });
+    cef.on('recovery_error', (msg) => showError('recovery', msg));
+    cef.on('recovery_success', (msg) => {
+        showError('recovery', msg);
+        setTimeout(() => switchToForm('login'), 3000);
+    });
+}
 
-            cef.emit('get_name');
+function setupFormEvents() {
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('registerBtn').addEventListener('click', register);
+    document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
+
+    document.getElementById('showRegisterBtn').addEventListener('click', () => switchToForm('register'));
+    document.getElementById('showLoginBtn').addEventListener('click', () => switchToForm('login'));
+    document.getElementById('recoveryLink').addEventListener('click', () => switchToForm('recovery'));
+    document.getElementById('backToLoginBtn').addEventListener('click', () => switchToForm('login'));
+
+    // Enter key handling
+    document.getElementById('password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+    });
+    document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') register();
+    });
+    document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendRecovery();
+    });
+}
+
+function switchToForm(target) {
+    const forms = ['loginForm', 'registerForm', 'recoveryForm'];
+    const titles = {
+        login: 'Войдите в свой аккаунт',
+        register: 'Создайте аккаунт',
+        recovery: 'Восстановление пароля'
+    };
+
+    forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (formId === target + 'Form') {
+            form.style.display = 'flex';
+            setTimeout(() => form.style.opacity = '1', 50);
         } else {
-            updatePlayerName('TestPlayer');
+            form.style.opacity = '0';
+            setTimeout(() => form.style.display = 'none', 300);
         }
+    });
 
-        function login() {
-            const pwd = document.getElementById('password').value.trim();
-            if (pwd.length >= 8) {
-                cef?.emit('auth_login', pwd);
-            }
-        }
+    document.getElementById('formTitle').textContent = titles[target] || '';
+}
 
-        function register() {
-            const email = document.getElementById('email').value.trim();
-            const pwd = document.getElementById('regPassword').value.trim();
-            const confirm = document.getElementById('confirmPassword').value.trim();
-            if (email && pwd.length >= 8 && pwd === confirm) {
-                cef?.emit('auth_register', email + "|" + pwd);
-            }
-        }
+function showError(formType, message) {
+    const el = document.getElementById(`${formType}Error`);
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+// Логин
+function login() {
+    const password = document.getElementById('password').value.trim();
+    if (!password || password.length < 8 || /\s/.test(password)) {
+        return showError('login', 'Пароль должен быть не менее 8 символов и без пробелов');
+    }
+    if (typeof cef !== 'undefined') {
+        cef.emit('auth_login', password);
+        debug('Отправлен auth_login');
+    }
+}
+
+// Регистрация
+function register() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const confirm = document.getElementById('confirmPassword').value.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return showError('register', 'Введите корректный email');
+    }
+
+    if (password.length < 8 || /\s/.test(password)) {
+        return showError('register', 'Пароль должен быть не менее 8 символов и без пробелов');
+    }
+
+    if (password !== confirm) {
+        return showError('register', 'Пароли не совпадают');
+    }
+
+    const data = `${email}|${password}`;
+    if (typeof cef !== 'undefined') {
+        cef.emit('auth_register', data);
+        debug('Отправлен auth_register');
+    }
+}
+
+// Восстановление
+function sendRecovery() {
+    const email = document.getElementById('recoveryEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return showError('recovery', 'Введите корректный email');
+    }
+    if (typeof cef !== 'undefined') {
+        cef.emit('auth_recovery', email);
+        debug('Отправлен auth_recovery');
+    }
+}
+
+// Закрытие интерфейса
+function closeInterface() {
+    const container = document.getElementById('authContainer');
+    container.style.animation = 'fadeOut 0.5s forwards';
+    setTimeout(() => {
+        if (typeof cef !== 'undefined') cef.emit('ExitCef', '');
+    }, 500);
+}
     </script>
 </body>
 </html>
