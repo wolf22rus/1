@@ -352,237 +352,379 @@
         </div>
     </div>
 
-   <script>
-// Глобальная переменная для хранения ника
-let playerName = '';
+    <script>
+        // Глобальная переменная для хранения ника
+        let playerName = '';
 
-// Отладочная функция
-function debug(msg) {
-    if (typeof cef !== 'undefined') cef.emit('debug_message', msg);
-    else console.log('[DEBUG]', msg);
-}
-
-// При загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    initPlayerName();
-    setupFormEvents();
-    setupCefListeners();
-});
-
-// Запрашиваем имя у CEF или задаём тестовое
-function initPlayerName() {
-    if (typeof cef !== 'undefined') {
-        cef.on('set_name', (name) => {
-            if (name && name.trim() !== '') {
-                playerName = name.trim();
-                updateUsernameFields(playerName);
-                debug('Ник получен: ' + playerName);
+        // Функция для отправки отладочных сообщений в чат через сервер
+        function debug(message) {
+            if (typeof cef !== 'undefined') {
+                cef.emit('debug_message', message);
+            } else {
+                console.log('Debug:', message);
             }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initPlayerName();
+            initAuthSystem();
+            setupCefListeners();
         });
-        cef.emit('get_name');
-        debug('Запрос ника отправлен');
-    } else {
-        playerName = 'TestPlayer';
-        updateUsernameFields(playerName);
-        debug('CEF не найден, имя по умолчанию');
-    }
-}
 
-// Устанавливаем ник в поля
-function updateUsernameFields(name) {
-    document.querySelectorAll('input[id="username"], input[id="regUsername"]').forEach(el => {
-        el.value = name;
-        el.placeholder = name;
-    });
-}
-
-// Подписки на CEF-события
-function setupCefListeners() {
-    if (typeof cef === 'undefined') return;
-
-    cef.on('account_status', (status) => {
-        debug('Получен account_status: ' + status);
-
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-
-        if (status === 'registered') {
-            switchForm(registerForm, loginForm);
-            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        } else if (status === 'not_registered') {
-            switchForm(loginForm, registerForm);
-            document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+        // Функция получения ника игрока
+        function initPlayerName() {
+            if (typeof cef !== 'undefined') {
+                cef.on('set_name', function(name) {
+                    if (name && name.trim() !== '') {
+                        playerName = name.trim();
+                        updatePlayerName(playerName);
+                        debug('Ник успешно получен: ' + playerName);
+                    }
+                });
+                cef.emit('get_name');
+                debug('Запрос ника отправлен');
+            } else {
+                playerName = 'TestPlayer';
+                updatePlayerName(playerName);
+                debug('CEF не доступен, используется тестовый ник: ' + playerName);
+            }
         }
-    });
 
-    cef.on('auth_success', () => {
-        debug('Успешная авторизация');
-        closeInterface();
-    });
-
-    cef.on('auth_error', (msg) => {
-        debug('Ошибка авторизации: ' + msg);
-        showError('login', msg);
-    });
-
-    cef.on('register_success', () => {
-        debug('Успешная регистрация');
-        showError('login', 'Регистрация успешна! Теперь войдите');
-        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    cef.on('register_error', (msg) => {
-        debug('Ошибка регистрации: ' + msg);
-        showError('register', msg);
-    });
-
-    cef.on('recovery_success', (msg) => {
-        debug('Успешное восстановление: ' + msg);
-        showError('recovery', msg);
-        setTimeout(() => {
-            switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
-            document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-        }, 3000);
-    });
-
-    cef.on('recovery_error', (msg) => {
-        debug('Ошибка восстановления: ' + msg);
-        showError('recovery', msg);
-    });
-}
-
-// Назначение обработчиков кнопок и полей
-function setupFormEvents() {
-    document.getElementById('loginBtn').addEventListener('click', login);
-    document.getElementById('registerBtn').addEventListener('click', register);
-    document.getElementById('sendRecoveryBtn').addEventListener('click', sendRecovery);
-
-    document.getElementById('showRegisterBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('loginForm'), document.getElementById('registerForm'));
-        document.getElementById('formTitle').textContent = 'Создайте аккаунт';
-    });
-
-    document.getElementById('showLoginBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    document.getElementById('recoveryLink').addEventListener('click', () => {
-        switchForm(document.getElementById('loginForm'), document.getElementById('recoveryForm'));
-        document.getElementById('formTitle').textContent = 'Восстановление пароля';
-    });
-
-    document.getElementById('backToLoginBtn').addEventListener('click', () => {
-        switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
-        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
-    });
-
-    // Enter key
-    document.getElementById('password').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') login();
-    });
-
-    document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') register();
-    });
-
-    document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendRecovery();
-    });
-}
-
-// Плавное переключение форм
-function switchForm(from, to) {
-    from.style.opacity = '0';
-    from.style.transform = 'translateX(-30px)';
-
-    setTimeout(() => {
-        from.style.display = 'none';
-        to.style.display = 'flex';
-
-        setTimeout(() => {
-            to.style.opacity = '1';
-            to.style.transform = 'translateX(0)';
-        }, 50);
-    }, 300);
-}
-
-// Показ ошибки
-function showError(type, msg) {
-    const el = document.getElementById(`${type}Error`);
-    if (!el) return;
-
-    el.textContent = msg;
-    el.classList.add('show');
-
-    setTimeout(() => el.classList.remove('show'), 5000);
-}
-
-// Авторизация
-function login() {
-    const password = document.getElementById('password').value.trim();
-
-    if (!password || password.length < 8 || /\s/.test(password)) {
-        return showError('login', 'Пароль должен быть не менее 8 символов и без пробелов');
-    }
-
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_login', password);
-        debug('Отправлен auth_login');
-    }
-}
-
-// Регистрация
-function register() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('regPassword').value.trim();
-    const confirm = document.getElementById('confirmPassword').value.trim();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('register', 'Введите корректный email');
-    }
-
-    if (password.length < 8 || /\s/.test(password)) {
-        return showError('register', 'Пароль должен быть не менее 8 символов и без пробелов');
-    }
-
-    if (password !== confirm) {
-        return showError('register', 'Пароли не совпадают');
-    }
-
-    const data = `${email}|${password}`;
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_register', data);
-        debug('Отправлен auth_register');
-    }
-}
-
-// Восстановление пароля
-function sendRecovery() {
-    const email = document.getElementById('recoveryEmail').value.trim();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return showError('recovery', 'Введите корректный email');
-    }
-
-    if (typeof cef !== 'undefined') {
-        cef.emit('auth_recovery', email);
-        debug('Отправлен auth_recovery');
-    }
-}
-
-// Закрытие интерфейса
-function closeInterface() {
-    const container = document.getElementById('authContainer');
-    container.style.animation = 'fadeOut 0.5s forwards';
-    setTimeout(() => {
-        if (typeof cef !== 'undefined') {
-            cef.emit('ExitCef', '');
+        // Обновление полей с ником
+        function updatePlayerName(name) {
+            const usernameField = document.getElementById('username');
+            const regUsernameField = document.getElementById('regUsername');
+            
+            if (usernameField) {
+                usernameField.value = name;
+                usernameField.placeholder = name;
+            }
+            
+            if (regUsernameField) {
+                regUsernameField.value = name;
+                regUsernameField.placeholder = name;
+            }
         }
-    }, 500);
-}
-</script>
 
+        // Настройка обработчиков событий от сервера
+        function setupCefListeners() {
+            if (typeof cef !== 'undefined') {
+                cef.on('auth_success', () => {
+                    debug('Успешная авторизация');
+                    fadeOutAndClose();
+                });
+
+                cef.on('auth_error', (message) => {
+                    showError(message, 'login');
+                    debug('Ошибка авторизации: ' + message);
+                });
+
+                cef.on('register_success', () => {
+                    debug('Успешная регистрация');
+                    switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
+                    showError('Регистрация успешна! Теперь войдите', 'login');
+                });
+
+                cef.on('register_error', (message) => {
+                    showError(message, 'register');
+                    debug('Ошибка регистрации: ' + message);
+                });
+
+                cef.on('recovery_code_sent', () => {
+                    debug('Код восстановления отправлен');
+                    switchForm(document.getElementById('emailStep'), document.getElementById('codeStep'));
+                    showError('Код отправлен на ваш email', 'code');
+                });
+
+                cef.on('recovery_code_error', (message) => {
+                    showError(message, 'recovery');
+                    debug('Ошибка отправки кода: ' + message);
+                });
+
+                cef.on('recovery_code_verified', () => {
+                    debug('Код успешно подтверждён');
+                    switchForm(document.getElementById('codeStep'), document.getElementById('newPasswordStep'));
+                    document.getElementById('formTitle').textContent = 'Введите новый пароль';
+                });
+
+                cef.on('recovery_code_invalid', (message) => {
+                    showError(message, 'code');
+                    debug('Ошибка подтверждения кода: ' + message);
+                });
+
+                cef.on('password_changed', () => {
+                    debug('Пароль успешно изменён');
+                    showError('Пароль успешно изменён! Теперь войдите', 'newPassword');
+                    setTimeout(() => {
+                        switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+                        document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                    }, 2000);
+                });
+
+                cef.on('password_change_error', (message) => {
+                    showError(message, 'newPassword');
+                    debug('Ошибка смены пароля: ' + message);
+                });
+            }
+        }
+
+        // Инициализация системы авторизации
+        function initAuthSystem() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const recoveryForm = document.getElementById('recoveryForm');
+            const emailStep = document.getElementById('emailStep');
+            const codeStep = document.getElementById('codeStep');
+            const newPasswordStep = document.getElementById('newPasswordStep');
+
+            document.getElementById('showRegisterBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(loginForm, registerForm);
+                document.getElementById('formTitle').textContent = 'Создайте аккаунт';
+                debug('Переключение на форму регистрации');
+            });
+
+            document.getElementById('showLoginBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(registerForm, loginForm);
+                document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                debug('Переключение на форму логина');
+            });
+
+            document.getElementById('recoveryLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(loginForm, recoveryForm);
+                document.getElementById('formTitle').textContent = 'Восстановление пароля';
+                debug('Переключение на форму восстановления');
+            });
+
+            document.getElementById('backToLoginBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(recoveryForm, loginForm);
+                document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                debug('Возврат к форме логина');
+            });
+
+            document.getElementById('backToEmailBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(codeStep, emailStep);
+                debug('Возврат к вводу email');
+            });
+
+            document.getElementById('backToCodeBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchForm(newPasswordStep, codeStep);
+                document.getElementById('formTitle').textContent = 'Восстановление пароля';
+                debug('Возврат к вводу кода');
+            });
+
+            document.getElementById('loginBtn').addEventListener('click', login);
+            document.getElementById('registerBtn').addEventListener('click', register);
+            document.getElementById('sendCodeBtn').addEventListener('click', sendRecoveryCode);
+            document.getElementById('verifyCodeBtn').addEventListener('click', verifyRecoveryCode);
+            document.getElementById('changePasswordBtn').addEventListener('click', changePassword);
+
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') register();
+            });
+            document.getElementById('recoveryEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendRecoveryCode();
+            });
+            document.getElementById('confirmNewPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') changePassword();
+            });
+
+            // Настройка полей для ввода кода
+            const codeInputs = document.querySelectorAll('.code-input');
+            codeInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                    if (e.key === 'Enter') verifyRecoveryCode();
+                });
+            });
+        }
+
+        // Переключение между формами с анимацией
+        function switchForm(from, to) {
+            from.style.opacity = '0';
+            from.style.transform = 'translateX(-30px)';
+            
+            setTimeout(() => {
+                from.style.display = 'none';
+                to.style.display = 'block';
+                
+                setTimeout(() => {
+                    to.style.opacity = '1';
+                    to.style.transform = 'translateX(0)';
+                }, 50);
+            }, 300);
+        }
+
+        // Отображение ошибки
+        function showError(message, formType = 'login') {
+            const errorElement = document.getElementById(`${formType}Error`);
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+            
+            setTimeout(() => {
+                errorElement.classList.remove('show');
+            }, 5000);
+        }
+
+        // Логика авторизации
+        function login() {
+            const password = document.getElementById('password').value.trim();
+            
+            if (!password || password.length < 6) {
+                showError('Пароль должен быть не менее 6 символов', 'login');
+                debug('Ошибка: Пароль слишком короткий');
+                return;
+            }
+            
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_login', password);
+                debug('Отправлено auth_login с паролем: ' + password);
+            } else {
+                debug('Тестовая авторизация успешна');
+                fadeOutAndClose();
+            }
+        }
+
+        // Логика регистрации
+        function register() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            
+            debug('Нажата кнопка регистрации');
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Введите корректный email', 'register');
+                debug('Ошибка: Некорректный email: ' + email);
+                return;
+            }
+            
+            if (!password || password.length < 6) {
+                showError('Пароль должен быть не менее 6 символов', 'register');
+                debug('Ошибка: Пароль слишком короткий');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Пароли не совпадают', 'register');
+                debug('Ошибка: Пароли не совпадают');
+                return;
+            }
+            
+            // Формируем строку в формате email|password
+            const data = email + "|" + password;
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_register', data);
+                debug('Отправлено auth_register с данными: ' + data);
+            } else {
+                debug('Тестовая регистрация успешна');
+                switchForm(document.getElementById('registerForm'), document.getElementById('loginForm'));
+                showError('Регистрация успешна! Теперь войдите', 'login');
+            }
+        }
+
+        // Логика отправки кода для восстановления пароля
+        function sendRecoveryCode() {
+            const email = document.getElementById('recoveryEmail').value.trim();
+            
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Введите корректный email', 'recovery');
+                debug('Ошибка: Некорректный email: ' + email);
+                return;
+            }
+            
+            if (typeof cef !== 'undefined') {
+                cef.emit('auth_recovery', email);
+                debug('Отправлено auth_recovery с email: ' + email);
+            } else {
+                debug('Тестовая отправка кода успешна');
+                switchForm(document.getElementById('emailStep'), document.getElementById('codeStep'));
+                showError('Код отправлен на ваш email', 'code');
+            }
+        }
+
+        // Логика подтверждения кода
+        function verifyRecoveryCode() {
+            const codeInputs = document.querySelectorAll('.code-input');
+            let code = '';
+            codeInputs.forEach(input => {
+                code += input.value;
+            });
+
+            if (code.length !== 6) {
+                showError('Введите 6-значный код', 'code');
+                debug('Ошибка: Код не полный');
+                return;
+            }
+
+            if (typeof cef !== 'undefined') {
+                cef.emit('verify_recovery_code', code);
+                debug('Отправлено verify_recovery_code с кодом: ' + code);
+            } else {
+                debug('Тестовое подтверждение кода успешно');
+                switchForm(document.getElementById('codeStep'), document.getElementById('newPasswordStep'));
+                document.getElementById('formTitle').textContent = 'Введите новый пароль';
+            }
+        }
+
+        // Логика смены пароля
+        function changePassword() {
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
+
+            if (!newPassword || newPassword.length < 6) {
+                showError('Пароль должен быть не менее 6 символов', 'newPassword');
+                debug('Ошибка: Новый пароль слишком короткий');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showError('Пароли не совпадают', 'newPassword');
+                debug('Ошибка: Пароли не совпадают');
+                return;
+            }
+
+            if (typeof cef !== 'undefined') {
+                cef.emit('change_password', newPassword);
+                debug('Отправлено change_password с новым паролем: ' + newPassword);
+            } else {
+                debug('Тестовая смена пароля успешна');
+                showError('Пароль успешно изменён! Теперь войдите', 'newPassword');
+                setTimeout(() => {
+                    switchForm(document.getElementById('recoveryForm'), document.getElementById('loginForm'));
+                    document.getElementById('formTitle').textContent = 'Войдите в свой аккаунт';
+                }, 2000);
+            }
+        }
+
+        // Анимация закрытия браузера
+        function fadeOutAndClose() {
+            const container = document.querySelector('.auth-container');
+            container.style.animation = 'fadeOut 0.5s forwards';
+            
+            setTimeout(() => {
+                if (typeof cef !== 'undefined') {
+                    cef.emit('close_browser');
+                    debug('Отправлено close_browser');
+                }
+            }, 500);
+        }
+    </script>
 </body>
 </html>
