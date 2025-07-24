@@ -80,15 +80,18 @@
         </div>
     </div>
 
-<script>
-    document.getElementById('genderMaleBtn').addEventListener('click', () => {
-        if (typeof cef !== 'undefined') cef.emit('select_gender', 'male');
-    });
+    <script>
+        document.getElementById('genderMaleBtn').addEventListener('click', () => {
+            if (typeof cef !== 'undefined') {
+                cef.emit('select_gender', 'male');
+            }
+        });
 
-    document.getElementById('genderFemaleBtn').addEventListener('click', () => {
-        if (typeof cef !== 'undefined') cef.emit('select_gender', 'female');
-    });
-</script>
-
+        document.getElementById('genderFemaleBtn').addEventListener('click', () => {
+            if (typeof cef !== 'undefined') {
+                cef.emit('select_gender', 'female');
+            }
+        });
+    </script>
 </body>
 </html>
