@@ -81,13 +81,14 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('genderMaleBtn').addEventListener('click', () => {
-            if (typeof cef !== 'undefined') cef.emit('gender_select', 'male');
-        });
-        document.getElementById('genderFemaleBtn').addEventListener('click', () => {
-            if (typeof cef !== 'undefined') cef.emit('gender_select', 'female');
-        });
-    </script>
+<script>
+    document.getElementById('genderMaleBtn').addEventListener('click', () => {
+        if (typeof cef !== 'undefined') cef.emit('select_gender', 'male');
+    });
+    document.getElementById('genderFemaleBtn').addEventListener('click', () => {
+        if (typeof cef !== 'undefined') cef.emit('select_gender', 'female');
+    });
+</script>
+
 </body>
 </html>
