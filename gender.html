@@ -81,20 +81,30 @@
     </div>
 
     <script>
-        document.getElementById('genderMaleBtn').addEventListener('click', () => {
-            if (typeof cef !== 'undefined') {
-                console.log('Отправка события select_gender с male');
-                cef.emit('select_gender', 'male');
+        // Проверка CEF при загрузке
+        window.addEventListener('load', () => {
+            if (typeof cef === 'undefined') {
+                alert('CEF не доступен! Страница загружается вне игры.');
             } else {
-                alert('CEF не доступен!');
+                console.log('CEF доступен, интерфейс готов.');
             }
         });
+
+        document.getElementById('genderMaleBtn').addEventListener('click', () => {
+            if (typeof cef !== 'undefined') {
+                cef.emit('select_gender', 'male');
+                alert('Событие select_gender отправлено с male!');
+            } else {
+                alert('CEF не доступен при клике на Мужской!');
+            }
+        });
+
         document.getElementById('genderFemaleBtn').addEventListener('click', () => {
             if (typeof cef !== 'undefined') {
-                console.log('Отправка события select_gender с female');
                 cef.emit('select_gender', 'female');
+                alert('Событие select_gender отправлено с female!');
             } else {
-                alert('CEF не доступен!');
+                alert('CEF не доступен при клике на Женский!');
             }
         });
     </script>
