@@ -32,6 +32,11 @@
             border: none;
             cursor: pointer;
         }
+        #status {
+            margin-top: 10px;
+            color: #ff4444;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -39,29 +44,55 @@
         <h1>Выберите скин</h1>
         <select id="skinSelect"></select>
         <button id="confirmSkinBtn">Подтвердить</button>
+        <div id="status"></div>
     </div>
 
     <script>
         let cef = window.cef;
 
+        // Проверка доступности CEF
+        if (!cef) {
+            document.getElementById('status').textContent = 'Ошибка: CEF не доступен';
+            return;
+        }
+
         // Обработка списка скинов от сервера
         cef.on('set_skin_list', (skinList) => {
             const skins = skinList.split(',').map(Number);
             const select = document.getElementById('skinSelect');
+            select.innerHTML = ''; // Очищаем существующие опции
+            if (skins.length === 0) {
+                document.getElementById('status').textContent = 'Ошибка: Список скинов пуст';
+                return;
+            }
             skins.forEach(skinId => {
                 const option = document.createElement('option');
                 option.value = skinId;
                 option.textContent = `Скин ${skinId}`;
                 select.appendChild(option);
             });
+            document.getElementById('status').textContent = 'Список скинов загружен';
         });
 
         // Отправка выбранного скина на сервер
         document.getElementById('confirmSkinBtn').addEventListener('click', () => {
-            const selectedSkin = document.getElementById('skinSelect').value;
-            if (selectedSkin && cef) {
-                cef.emit('skin_selected', selectedSkin); // Отправляем ID как строку
+            const select = document.getElementById('skinSelect');
+            const selectedSkin = select.value;
+            if (!selectedSkin) {
+                document.getElementById('status').textContent = 'Ошибка: Выберите скин';
+                return;
             }
+            if (cef) {
+                cef.emit('skin_selected', selectedSkin); // Отправляем ID как строку
+                document.getElementById('status').textContent = 'Скин отправлен, ожидайте...';
+            } else {
+                document.getElementById('status').textContent = 'Ошибка: CEF не доступен';
+            }
+        });
+
+        // Обработка ошибок загрузки
+        window.addEventListener('error', (e) => {
+            document.getElementById('status').textContent = 'Ошибка: ' + e.message;
         });
     </script>
 </body>
