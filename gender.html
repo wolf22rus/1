@@ -1,177 +1,50 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выбор пола</title>
     <style>
-        * {
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: transparent !important;
-            display: flex;
-            justify-content: center;
-            align-items: center; /* ПОДНЯТО В ЦЕНТР */
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        .gender-container {
-            display: flex;
-            gap: 30px;
-            padding: 20px;
-            background: rgba(30, 50, 100, 0.3);
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(100, 150, 255, 0.2);
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .gender-btn {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-
-        .gender-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s;
+        h1 { font-size: 48px; margin-bottom: 40px; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 20px 40px;
+            margin: 20px;
+            font-size: 28px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 300px;
         }
-
-        .gender-btn:hover::before {
-            opacity: 1;
-        }
-
-        .gender-btn:active {
-            transform: scale(0.95);
-        }
-
-        .gender-btn .icon {
-            font-size: 48px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-
-        .male {
-            background: linear-gradient(135deg, #1e90ff, #00bfff);
-        }
-
-        .female {
-            background: linear-gradient(135deg, #ff69b4, #ff1493);
-        }
-
-        .gender-btn:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .title {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #a0d8ff;
-            font-size: 24px;
-            font-weight: 300;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            animation: fadeIn 1s ease-out;
-            white-space: nowrap;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        .btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.05); }
+        .btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-
-    <div class="title">Выберите пол персонажа</div>
-
-    <div class="gender-container">
-        <button class="gender-btn male" onclick="selectGender('male')">
-            <div class="icon">♂</div>
-            <div>Мужской</div>
-        </button>
-        <button class="gender-btn female" onclick="selectGender('female')">
-            <div class="icon">♀</div>
-            <div>Женский</div>
-        </button>
-    </div>
+    <h1>Выберите пол персонажа</h1>
+    <button class="btn" onclick="selectGender('male')">Мужской</button>
+    <button class="btn" onclick="selectGender('female')">Женский</button>
 
     <script>
-        function selectGender(gender) {
-            const container = document.querySelector('.gender-container');
-            container.style.transition = 'all 0.4s ease';
-            container.style.opacity = '0';
-            container.style.transform = 'scale(0.9) translateY(20px)';
-
-            setTimeout(() => {
-                cef_emit('gender_select', gender);
-            }, 400);
-        }
-
-        function cef_emit(event, data) {
-            try {
-                CefSharp.PostMessage({ event: event, data: data });
-            } catch(e) {
-                try {
-                    window.cefQuery({ request: JSON.stringify({ event: event, data: data }) });
-                } catch(e2) {
-                    console.log("CEF emit error");
-                }
-            }
-        }
-
-        // Плавное появление
-        window.addEventListener('load', () => {
-            const container = document.querySelector('.gender-container');
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(30px)';
-            setTimeout(() => {
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
-            }, 100);
-        });
+    function selectGender(gender) {
+        console.log("Отправка пола: " + gender);
+        cef.emit('gender_select', gender);
+        document.body.innerHTML = '<h1 style="margin-top:200px">Сохранение...</h1>';
+    }
     </script>
-
 </body>
 </html>
