@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Выбор пола</title>
-  <style>
-    body { font-family: Arial; text-align: center; padding: 50px; background: #111; color: white; }
-    button { padding: 15px 30px; margin: 20px; font-size: 18px; cursor: pointer; }
-    #male { background: #0077ff; }
-    #female { background: #ff0077; }
-  </style>
+    <meta charset="utf-8">
+    <title>Выбор пола</title>
+    <style>
+        body { background: #111; color: #fff; font-family: Arial; text-align: center; padding: 50px; }
+        button { padding: 15px 30px; margin: 20px; font-size: 18px; cursor: pointer; }
+        .male { background: #3498db; }
+        .female { background: #e91e63; }
+    </style>
 </head>
 <body>
-  <h1>Выберите пол персонажа</h1>
-  <button id="male" onclick="selectGender('male')">Мужской</button>
-  <button id="female" onclick="selectGender('female')">Женский</button>
+    <h1>Выберите пол персонажа</h1>
+    <button class="male" onclick="cef_emit('gender_select', 'male')">Мужской</button>
+    <button class="female" onclick="cef_emit('gender_select', 'female')">Женский</button>
 
-  <script>
-    function selectGender(gender) {
-      cef.emit('gender_select', gender);
-    }
-  </script>
+    <script>
+        function cef_emit(event, data) {
+            try {
+                CefSharp.PostMessage({ event: event, data: data });
+            } catch(e) {
+                window.cefQuery({ request: JSON.stringify({ event: event, data: data }) });
+            }
+        }
+    </script>
 </body>
 </html>
