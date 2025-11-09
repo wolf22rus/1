@@ -35,6 +35,212 @@
             color: #00d4ff;
             text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
         }
+        .gender-info {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #88cfff;
+        }
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .skin-btn {
+            padding: 12px 6px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(0, 180, 255, 0.12);
+            border: 1.5px solid rgba(0, 212, 255, 0.4);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .skin-btn:hover {
+            background: rgba(0, 212, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+        }
+        .skin-btn.active {
+            background: #00d4ff;
+            color: #000;
+            border-color: #00d4ff;
+            box-shadow: 0 0 16px rgba(0, 212, 255, 0.6);
+            transform: scale(1.05);
+        }
+        .hint {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #88cfff;
+        }
+        .confirm {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #00ff88;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .confirm.show { opacity: 1; }
+
+        @media (max-width: 480px) {
+            .skin-btn { font-size: 12px; padding: 10px 4px; }
+            h1 { font-size: 20px; }
+            .skins-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ВЫБЕРИТЕ СКИН</h1>
+        <div class="gender-info" id="genderInfo">Пол: загрузка...</div>
+        <div id="skinsContainer" class="skins-grid"></div>
+        <div class="hint">Клик или клавиши 1-7 | Enter - подтвердить | ESC - отмена</div>
+        <div class="confirm" id="confirm">Нажмите Enter для подтверждения</div>
+    </div>
+
+    <script>
+        // ТВОИ СКИНЫ
+        const skinDatabase = {
+            // МУЖСКИЕ СКИНЫ (7 штук)
+            male: [78, 79, 134, 135, 136, 137, 230],
+            
+            // ЖЕНСКИЕ СКИНЫ (5 штук)
+            female: [77, 131, 151, 196, 201]
+        };
+
+        let currentGender = null;
+        let selected = null;
+        const confirmEl = document.getElementById('confirm');
+        const container = document.getElementById('skinsContainer');
+        const genderInfo = document.getElementById('genderInfo');
+
+        // Функция отрисовки скинов
+        function renderSkins() {
+            container.innerHTML = '';
+            
+            if (!currentGender) {
+                container.innerHTML = '<div style="grid-column: 1/-1; padding: 20px; color: #ff6b6b;">Ожидание данных о поле...</div>';
+                return;
+            }
+
+            const skins = skinDatabase[currentGender] || [];
+            
+            if (skins.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; padding: 20px; color: #ff6b6b;">Нет доступных скинов для этого пола</div>';
+                return;
+            }
+
+            // Обновляем информацию о поле
+            genderInfo.textContent = `Пол: ${currentGender === 'male' ? 'Мужской' : 'Женский'} | Доступно скинов: ${skins.length}`;
+
+            // Создаем кнопки для каждого скина
+            skins.forEach((id, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'skin-btn';
+                btn.textContent = `ID: ${id}`;
+                btn.dataset.id = id;
+                btn.onclick = () => selectSkin(id);
+                
+                // Назначаем горячие клавиши 1-7
+                if (index < 7) btn.dataset.key = index + 1;
+                
+                container.appendChild(btn);
+            });
+        }
+
+        // Функция выбора скина
+        function selectSkin(id) {
+            selected = parseInt(id);
+            document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-id="${id}"]`).classList.add('active');
+            confirmEl.classList.add('show');
+        }
+
+        // Функция подтверждения выбора
+        function confirmSkin() {
+            if (selected && 'cef' in window) {
+                cef.emit('skin_selected', selected.toString());
+                console.log('Выбран скин:', selected);
+            }
+        }
+
+        // Обработка клавиш
+        document.addEventListener('keydown', e => {
+            const key = parseInt(e.key);
+            
+            // Горячие клавиши 1-7
+            if (key >= 1 && key <= 7) {
+                const skins = skinDatabase[currentGender] || [];
+                const skin = skins[key - 1];
+                if (skin) selectSkin(skin);
+            } 
+            // Enter - подтвердить
+            else if (e.key === 'Enter' && selected) {
+                confirmSkin();
+            } 
+            // ESC - отмена
+            else if (e.key === 'Escape') {
+                if('cef' in window) {
+                    cef.emit('close_browser', '');
+                }
+            }
+        });
+
+        // Обработчик события от Pawn (получение пола)
+        if('cef' in window) {
+            cef.on('set_gender', function(gender) {
+                console.log('Пол получен от сервера:', gender);
+                currentGender = gender;
+                renderSkins();
+            });
+        }
+
+        // Инициализация при загрузке
+        window.addEventListener('load', () => {
+            renderSkins();
+            document.body.focus();
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Выбор скина</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent !important;
+            color: #e0f7ff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 15px;
+        }
+        .container {
+            text-align: center;
+            background: rgba(10, 25, 45, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 480px;
+        }
+        h1 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
         .skins-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -151,3 +357,4 @@
     </script>
 </body>
 </html>
+
