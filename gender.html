@@ -107,11 +107,11 @@
     <div class="title">Выберите пол персонажа</div>
     <div class="gender-container">
         <button class="gender-btn male" onclick="selectGender('male')">
-            <div class="icon">♂</div>
+            <div class="icon">Male</div>
             <div>Мужской</div>
         </button>
         <button class="gender-btn female" onclick="selectGender('female')">
-            <div class="icon">♀</div>
+            <div class="icon">Female</div>
             <div>Женский</div>
         </button>
     </div>
@@ -123,13 +123,13 @@
             container.style.opacity = '0';
             container.style.transform = 'scale(0.9) translateY(20px)';
 
-            // Отправляем событие через 400 мс (после анимации)
+            // Ждём анимацию → отправляем событие
             setTimeout(() => {
                 cef.emit('gender_select', gender);
             }, 400);
         }
 
-        // Плавное появление при загрузке
+        // Плавное появление
         window.addEventListener('load', () => {
             const container = document.querySelector('.gender-container');
             container.style.opacity = '0';
