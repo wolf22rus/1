@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор спавна</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            background: transparent !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+        }
+        .spawn-container {
+            background: rgba(10, 20, 40, 0.92);
+            border-radius: 20px;
+            padding: 35px 40px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(100, 180, 255, 0.5);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(100, 180, 255, 0.2);
+            min-width: 800px;
+            max-width: 900px;
+            text-align: center;
+        }
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            color: #4fc3f7;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(79, 195, 247, 0.6);
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #4fc3f7, #1e88e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .spawn-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+        .spawn-card {
+            flex: 1;
+            background: rgba(30, 60, 120, 0.7);
+            border-radius: 16px;
+            padding: 22px 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .spawn-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(100, 180, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .spawn-card:hover::before {
+            opacity: 1;
+        }
+        .spawn-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            background: rgba(50, 100, 200, 0.9);
+            border-color: rgba(100, 180, 255, 0.8);
+            box-shadow: 
+                0 15px 35px rgba(50, 130, 255, 0.4),
+                0 0 25px rgba(100, 180, 255, 0.3);
+        }
+        .spawn-card.selected {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border-color: #81c784;
+            box-shadow: 
+                0 15px 35px rgba(76, 175, 80, 0.5),
+                0 0 30px rgba(129, 199, 132, 0.4);
+            transform: translateY(-5px) scale(1.02);
+        }
+        .spawn-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+        }
+        .spawn-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            letter-spacing: 0.8px;
+        }
+        .spawn-key {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .confirm-btn {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            border: none;
+            border-radius: 14px;
+            padding: 16px 50px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.4);
+            min-width: 220px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .confirm-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(33, 150, 243, 0.6);
+        }
+        .confirm-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .confirm-btn.confirmed {
+            background: linear-gradient(135deg, #4caf50, #2e7d32) !important;
+            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.6) !important;
+        }
+        @media (max-width: 900px) {
+            .spawn-container { min-width: 90%; padding: 25px; }
+            .spawn-row { flex-direction: column; gap: 15px; }
+            .spawn-card { min-height: 100px; }
+            .title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="spawn-container">
+        <div class="title">ВЫБЕРИТЕ ТОЧКУ СТАРТА</div>
+        
+        <div class="spawn-row">
+            <div class="spawn-card" onclick="selectSpawn(0)" id="card-0">
+                <div class="spawn-icon">Train</div>
+                <div class="spawn-label">ВОКЗАЛ</div>
+                <div class="spawn-key">Клавиша 1</div>
+            </div>
+            <div class="spawn-card" onclick="selectSpawn(1)" id="card-1">
+                <div class="spawn-icon">Lock Open</div>
+                <div class="spawn-label">МЕСТО ВЫХОДА</div>
+                <div class="spawn-key">Клавиша 2</div>
+            </div>
+            <div class="spawn-card" onclick="selectSpawn(2)" id="card-2">
+                <div class="spawn-icon">Home</div>
+                <div class="spawn-label">ОРГАНИЗАЦИЯ</div>
+                <div class="spawn-key">Клавиша 3</div>
+            </div>
+        </div>
+
+        <button class="confirm-btn" id="confirmBtn" disabled>ПОДТВЕРДИТЬ</button>
+    </div>
+
+    <script>
+        let selected = -1;
+        const cards = document.querySelectorAll('.spawn-card');
+        const btn = document.getElementById('confirmBtn');
+
+        function selectSpawn(id) {
+            selected = id;
+            cards.forEach((c, i) => {
+                c.classList.toggle('selected', i === id);
+            });
+            btn.disabled = false;
+            btn.textContent = 'ПОДТВЕРДИТЬ';
+            btn.classList.remove('confirmed');
+        }
+
+        function confirmSpawn() {
+            if (selected === -1) return;
+
+            console.log('Отправка: spawn_selected =', selected);
+            cef.emit('spawn_selected', selected);
+
+            btn.textContent = 'ГОТОВО!';
+            btn.classList.add('confirmed');
+            btn.disabled = true;
+
+            // Анимация исчезновения через 1 сек
+            setTimeout(() => {
+                document.querySelector('.spawn-container').style.opacity = '0';
+            }, 800);
+        }
+
+        // Клавиши
+        document.addEventListener('keydown', e => {
+            if (e.key === '1') selectSpawn(0);
+            if (e.key === '2') selectSpawn(1);
+            if (e.key === '3') selectSpawn(2);
+            if (e.key === 'Enter' && !btn.disabled) confirmSpawn();
+        });
+
+        // Анимация появления
+        window.addEventListener('load', () => {
+            document.querySelector('.spawn-container').style.opacity = '1';
+        });
+
+        // CSS анимация
+        const style = document.createElement('style');
+        style.textContent = `
+            .spawn-container { opacity: 0; transition: opacity 0.6s ease; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
