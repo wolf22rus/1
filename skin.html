@@ -124,15 +124,16 @@
 </head>
 <body>
     <div class="skin-selector">
-         <button class="nav-arrow" onclick="changeSkin(-1)">❮</button>
+        <button class="nav-arrow" onclick="changeSkin(-1)">Left Arrow</button>
       
         <div class="skin-info">
             <div class="skin-name" id="skinName">CJ</div>
             <button class="select-btn" onclick="selectSkin()">ВЫБОР</button>
         </div>
       
-         <button class="nav-arrow" onclick="changeSkin(1)">❯</button>
+        <button class="nav-arrow" onclick="changeSkin(1)">Right Arrow</button>
     </div>
+
     <script>
         const skinsData = {
             male: [
@@ -170,80 +171,65 @@
                 { id: 157, name: "Beach" }
             ]
         };
-        
+
         let currentSkinIndex = 0;
         let currentGender = 'male';
         let currentSkinId = 0;
-        
-        // ✅ ПРАВИЛЬНАЯ ФУНКЦИЯ ДЛЯ CEF (ПРОСТАЯ СТРОКА)
-        function cef_emit(event, data) {
-            console.log("✅ CEF EMIT:", event, "=", data);
-            window.external.invoke(event + " " + data);  // Формат: "skin_selected 26"
-        }
-        
-        function setGender(gender) {
+
+        // Получаем пол от Pawn
+        window.setSkinGender = function(gender) {
             console.log("Пол получен:", gender);
             currentGender = gender;
             currentSkinIndex = 0;
             updateDisplay();
-        }
-        
+        };
+
         function updateDisplay() {
             const skins = skinsData[currentGender];
             if (skins && skins.length > 0) {
-                const currentSkin = skins[currentSkinIndex];
-                document.getElementById('skinName').textContent = currentSkin.name;
-                currentSkinId = currentSkin.id;
+                const skin = skins[currentSkinIndex];
+                document.getElementById('skinName').textContent = skin.name;
+                currentSkinId = skin.id;
             }
         }
-        
+
         function changeSkin(direction) {
             const skins = skinsData[currentGender];
             if (!skins || skins.length === 0) return;
-          
-            currentSkinIndex += direction;
-          
-            if (currentSkinIndex < 0) {
-                currentSkinIndex = skins.length - 1;
-            } else if (currentSkinIndex >= skins.length) {
-                currentSkinIndex = 0;
-            }
-          
+            currentSkinIndex = (currentSkinIndex + direction + skins.length) % skins.length;
             updateDisplay();
         }
-        
+
         function selectSkin() {
             const button = document.querySelector('.select-btn');
             const originalText = button.textContent;
-          
+
             button.textContent = 'ВЫБРАНО!';
             button.style.background = 'linear-gradient(135deg, #4caf50, #2e7d32)';
             button.disabled = true;
-            
-            // ✅ ОТПРАВЛЯЕМ ПРАВИЛЬНО: "skin_selected 26"
-            cef_emit('skin_selected', currentSkinId);
-            
+
+            // КЛЮЧЕВАЯ СТРОКА — ОТПРАВКА В PAWN
+            console.log("Отправка: skin_selected =", currentSkinId);
+            cef.emit('skin_selected', currentSkinId);
+
             setTimeout(() => {
                 button.textContent = originalText;
                 button.style.background = 'linear-gradient(135deg, #1e88e5, #1565c0)';
                 button.disabled = false;
             }, 1500);
         }
-        
+
         // Клавиатура
         document.addEventListener('keydown', e => {
             if (e.key === 'ArrowLeft') changeSkin(-1);
             if (e.key === 'ArrowRight') changeSkin(1);
             if (e.key === 'Enter') selectSkin();
         });
-        
+
         // Инициализация
         window.addEventListener('load', () => {
             setTimeout(updateDisplay, 100);
         });
-        
-        // ✅ Pawn вызывает эту функцию
-        window.setSkinGender = setGender;
     </script>
 </body>
 </html>
