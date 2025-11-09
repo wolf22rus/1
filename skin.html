@@ -1,234 +1,152 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Выбор скина</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: transparent !important;
+            color: #e0f7ff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             overflow: hidden;
+            padding: 15px;
         }
-        .skin-selector {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            background: rgba(15, 35, 70, 0.85);
-            border-radius: 15px;
-            padding: 30px 40px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 2px solid rgba(100, 180, 255, 0.6);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            min-width: 350px;
-        }
-        .nav-arrow {
-            width: 70px;
-            height: 70px;
-            background: rgba(30, 100, 200, 0.8);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .nav-arrow:hover {
-            background: rgba(50, 130, 255, 0.9);
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(50, 130, 255, 0.4);
-        }
-        .nav-arrow:active {
-            transform: scale(0.95);
-        }
-        .skin-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-            flex: 1;
-        }
-        .skin-name {
-            font-size: 32px;
-            font-weight: 700;
-            color: #4fc3f7;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            line-height: 1;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+        .container {
             text-align: center;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(10, 25, 45, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 480px;
         }
-        .select-btn {
-            background: linear-gradient(135deg, #1e88e5, #1565c0);
-            border: none;
-            border-radius: 8px;
-            padding: 14px 40px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
+        h1 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .skin-btn {
+            padding: 12px 6px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(0, 180, 255, 0.12);
+            border: 1.5px solid rgba(0, 212, 255, 0.4);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
-            min-width: 160px;
+            transition: all 0.3s ease;
+            user-select: none;
         }
-        .select-btn:hover {
-            background: linear-gradient(135deg, #2196f3, #1976d2);
+        .skin-btn:hover {
+            background: rgba(0, 212, 255, 0.25);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
         }
-        .select-btn:active {
-            transform: translateY(0);
+        .skin-btn.active {
+            background: #00d4ff;
+            color: #000;
+            border-color: #00d4ff;
+            box-shadow: 0 0 16px rgba(0, 212, 255, 0.6);
+            transform: scale(1.05);
         }
+        .hint {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #88cfff;
+        }
+        .confirm {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #00ff88;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .confirm.show { opacity: 1; }
+
         @media (max-width: 480px) {
-            .skin-selector {
-                flex-direction: column;
-                gap: 25px;
-                min-width: 280px;
-                padding: 25px;
-            }
-            .nav-arrow {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
-            .skin-name {
-                font-size: 28px;
-            }
-            .select-btn {
-                padding: 12px 35px;
-                font-size: 16px;
-            }
+            .skin-btn { font-size: 12px; padding: 10px 4px; }
+            h1 { font-size: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="skin-selector">
-        <button class="nav-arrow" onclick="changeSkin(-1)">Left Arrow</button>
-      
-        <div class="skin-info">
-            <div class="skin-name" id="skinName">CJ</div>
-            <button class="select-btn" onclick="selectSkin()">ВЫБОР</button>
-        </div>
-      
-        <button class="nav-arrow" onclick="changeSkin(1)">Right Arrow</button>
+    <div class="container">
+        <h1>ВЫБЕРИТЕ СКИН</h1>
+        <div id="skinsContainer" class="skins-grid"></div>
+        <div class="hint">Клик или клавиши 1-9</div>
+        <div class="confirm" id="confirm">Нажмите Enter</div>
     </div>
 
     <script>
-        const skinsData = {
-            male: [
-                { id: 0, name: "CJ" },
-                { id: 1, name: "Truth" },
-                { id: 2, name: "Maccer" },
-                { id: 7, name: "Casual" },
-                { id: 14, name: "Business" },
-                { id: 15, name: "Biker" },
-                { id: 20, name: "Sports" },
-                { id: 21, name: "Taxi Driver" },
-                { id: 22, name: "Medic" },
-                { id: 23, name: "Cop" },
-                { id: 24, name: "Farmer" },
-                { id: 25, name: "Beach" },
-                { id: 26, name: "Country" },
-                { id: 27, name: "Old Man" },
-                { id: 28, name: "Clown" }
-            ],
-            female: [
-                { id: 9, name: "Millie" },
-                { id: 11, name: "Barbara" },
-                { id: 12, name: "Helena" },
-                { id: 13, name: "Michelle" },
-                { id: 38, name: "Misty" },
-                { id: 55, name: "Denise" },
-                { id: 56, name: "Sexy" },
-                { id: 63, name: "Rural" },
-                { id: 76, name: "Prostitute" },
-                { id: 141, name: "Casual" },
-                { id: 148, name: "Eva" },
-                { id: 150, name: "Millie" },
-                { id: 151, name: "Michelle" },
-                { id: 152, name: "Barbara" },
-                { id: 157, name: "Beach" }
-            ]
-        };
+        // ТВОИ СКИНЫ
+        const maleSkins = [26, 25, 35, 36, 50, 143, 262, 2];
+        const femaleSkins = [12, 55, 69, 90, 93];
 
-        let currentSkinIndex = 0;
-        let currentGender = 'male';
-        let currentSkinId = 0;
+        let selected = null;
+        const confirmEl = document.getElementById('confirm');
+        const container = document.getElementById('skinsContainer');
 
-        // Получаем пол от Pawn
-        window.setSkinGender = function(gender) {
-            console.log("Пол получен:", gender);
-            currentGender = gender;
-            currentSkinIndex = 0;
-            updateDisplay();
-        };
+        // ПОЛУЧАЕМ ПОЛ ИЗ PAWN (через URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const gender = urlParams.get('gender'); // male или female
 
-        function updateDisplay() {
-            const skins = skinsData[currentGender];
-            if (skins && skins.length > 0) {
-                const skin = skins[currentSkinIndex];
-                document.getElementById('skinName').textContent = skin.name;
-                currentSkinId = skin.id;
+        const skins = (gender === 'female') ? femaleSkins : maleSkins;
+
+        function renderSkins() {
+            container.innerHTML = '';
+            skins.forEach((id, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'skin-btn';
+                btn.textContent = `ID: ${id}`;
+                btn.dataset.id = id;
+                btn.onclick = () => selectSkin(id);
+                if (index < 9) btn.dataset.key = index + 1;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectSkin(id) {
+            selected = parseInt(id);
+            document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-id="${id}"]`).classList.add('active');
+            confirmEl.classList.add('show');
+        }
+
+        function confirmSkin() {
+            if (selected) {
+                cef.emit('skin_selected', selected);
             }
         }
 
-        function changeSkin(direction) {
-            const skins = skinsData[currentGender];
-            if (!skins || skins.length === 0) return;
-            currentSkinIndex = (currentSkinIndex + direction + skins.length) % skins.length;
-            updateDisplay();
-        }
-
-        function selectSkin() {
-            const button = document.querySelector('.select-btn');
-            const originalText = button.textContent;
-
-            button.textContent = 'ВЫБРАНО!';
-            button.style.background = 'linear-gradient(135deg, #4caf50, #2e7d32)';
-            button.disabled = true;
-
-            // КЛЮЧЕВАЯ СТРОКА — ОТПРАВКА В PAWN
-            console.log("Отправка: skin_selected =", currentSkinId);
-            cef.emit('skin_selected', currentSkinId);
-
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.style.background = 'linear-gradient(135deg, #1e88e5, #1565c0)';
-                button.disabled = false;
-            }, 1500);
-        }
-
-        // Клавиатура
         document.addEventListener('keydown', e => {
-            if (e.key === 'ArrowLeft') changeSkin(-1);
-            if (e.key === 'ArrowRight') changeSkin(1);
-            if (e.key === 'Enter') selectSkin();
+            const key = parseInt(e.key);
+            if (key >= 1 && key <= 9) {
+                const skin = skins[key - 1];
+                if (skin) selectSkin(skin);
+            } else if (e.key === 'Enter' && selected) {
+                confirmSkin();
+            }
         });
 
-        // Инициализация
         window.addEventListener('load', () => {
-            setTimeout(updateDisplay, 100);
+            renderSkins();
+            document.body.focus();
         });
     </script>
 </body>
