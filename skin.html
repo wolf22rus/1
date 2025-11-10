@@ -159,7 +159,6 @@
             }
         });
 
-        // Ожидаем событие от сервера
         if('cef' in window) {
             cef.on('set_gender', function(gender) {
                 console.log('Пол получен от сервера:', gender);
@@ -171,7 +170,6 @@
             updateDebug('CEF не доступен!');
         }
 
-        // Запрос данных при загрузке
         window.addEventListener('load', () => {
             updateDebug('Страница загружена');
             renderSkins();
@@ -179,21 +177,6 @@
             if('cef' in window) {
                 updateDebug('Запрос пола у сервера...');
                 cef.emit('get_gender', '');
-                
-                // Повторные запросы
-                setTimeout(() => {
-                    if (!currentGender) {
-                        updateDebug('Повторный запрос пола...');
-                        cef.emit('get_gender', '');
-                    }
-                }, 2000);
-                
-                setTimeout(() => {
-                    if (!currentGender) {
-                        updateDebug('Третий запрос пола...');
-                        cef.emit('get_gender', '');
-                    }
-                }, 4000);
             }
         });
     </script>
