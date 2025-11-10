@@ -77,6 +77,11 @@
             opacity: 0;
         }
         .confirm.show { opacity: 1; }
+        .debug {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #ffaa00;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +91,7 @@
         <div id="skinsContainer" class="skins-grid"></div>
         <div class="hint">Клик или клавиши 1-7 | Enter - подтвердить | ESC - отмена</div>
         <div class="confirm" id="confirm">Нажмите Enter для подтверждения</div>
+        <div class="debug" id="debug">Ожидание данных...</div>
     </div>
 
     <script>
@@ -97,6 +103,11 @@
         let currentGender = null;
         let selected = null;
 
+        function updateDebug(message) {
+            document.getElementById('debug').textContent = message;
+            console.log('DEBUG:', message);
+        }
+
         function renderSkins() {
             const container = document.getElementById('skinsContainer');
             const genderInfo = document.getElementById('genderInfo');
@@ -106,11 +117,13 @@
             if (!currentGender) {
                 genderInfo.textContent = 'Ожидание данных о поле...';
                 container.innerHTML = '<div style="grid-column:1/-1; padding:20px; color:#ff6b6b;">Загрузка скинов...</div>';
+                updateDebug('Пол не получен, ожидание...');
                 return;
             }
 
             const skins = skinDatabase[currentGender] || [];
             genderInfo.textContent = `Пол: ${currentGender === 'male' ? 'Мужской' : 'Женский'} | Скинов: ${skins.length}`;
+            updateDebug(`Пол получен: ${currentGender}, скинов: ${skins.length}`);
 
             skins.forEach((id, index) => {
                 const btn = document.createElement('div');
@@ -126,6 +139,7 @@
             document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById('confirm').classList.add('show');
+            updateDebug(`Выбран скин: ${id}`);
         }
 
         document.addEventListener('keydown', e => {
@@ -135,10 +149,12 @@
                 const skin = skins[key - 1];
                 if (skin) selectSkin(skin);
             } else if (e.key === 'Enter' && selected) {
+                updateDebug(`Отправка скина на сервер: ${selected}`);
                 if('cef' in window) {
                     cef.emit('skin_selected', selected.toString());
                 }
             } else if (e.key === 'Escape') {
+                updateDebug('Закрытие браузера');
                 if('cef' in window) cef.emit('close_browser', '');
             }
         });
@@ -146,17 +162,38 @@
         // Ожидаем событие от сервера
         if('cef' in window) {
             cef.on('set_gender', function(gender) {
-                console.log('Пол получен:', gender);
+                console.log('Пол получен от сервера:', gender);
+                updateDebug(`Событие set_gender: ${gender}`);
                 currentGender = gender;
                 renderSkins();
             });
+        } else {
+            updateDebug('CEF не доступен!');
         }
 
         // Запрос данных при загрузке
         window.addEventListener('load', () => {
+            updateDebug('Страница загружена');
             renderSkins();
+            
             if('cef' in window) {
+                updateDebug('Запрос пола у сервера...');
                 cef.emit('get_gender', '');
+                
+                // Повторные запросы
+                setTimeout(() => {
+                    if (!currentGender) {
+                        updateDebug('Повторный запрос пола...');
+                        cef.emit('get_gender', '');
+                    }
+                }, 2000);
+                
+                setTimeout(() => {
+                    if (!currentGender) {
+                        updateDebug('Третий запрос пола...');
+                        cef.emit('get_gender', '');
+                    }
+                }, 4000);
             }
         });
     </script>
