@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB Color Picker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        
+        body {
+            background: transparent !important;
+            color: #e0f7ff;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 15px;
+        }
+        
+        .color-picker-container {
+            text-align: center;
+            background: rgba(10, 25, 45, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 180, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            letter-spacing: 0.8px;
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
+        
+        .color-wheel-wrapper {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 20px;
+        }
+        
+        .color-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff0000,
+                #ffff00,
+                #00ff00,
+                #00ffff,
+                #0000ff,
+                #ff00ff,
+                #ff0000
+            );
+            cursor: pointer;
+        }
+        
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            background: rgba(10, 25, 45, 0.95);
+            border: 1px solid rgba(0, 180, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .rgb-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 8px;
+        }
+        
+        .rgb-text span:nth-child(1) { color: #ff6666; }
+        .rgb-text span:nth-child(2) { color: #66ff66; }
+        .rgb-text span:nth-child(3) { color: #6666ff; }
+        
+        .color-indicator {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid rgba(10, 25, 45, 0.95);
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            top: -13px;
+            left: 117px;
+            transition: left 0.05s, top 0.05s;
+        }
+        
+        .color-preview {
+            background: rgb(255, 0, 0);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 0 auto 20px;
+            width: 260px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .hex-input-container {
+            margin: 0 auto 20px;
+            width: 260px;
+        }
+        
+        .hex-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 180, 255, 0.5);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .hex-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 0 auto 20px;
+            width: 260px;
+        }
+        
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        
+        .red-slider::-webkit-slider-thumb { background: #ff0000; }
+        .green-slider::-webkit-slider-thumb { background: #00ff00; }
+        .blue-slider::-webkit-slider-thumb { background: #0000ff; }
+        
+        .buttons-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .color-btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            background: rgba(0, 180, 255, 0.12);
+            border: 1.5px solid rgba(0, 212, 255, 0.4);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #e0f7ff;
+            user-select: none;
+        }
+        
+        .color-btn:hover {
+            background: rgba(0, 212, 255, 0.25);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.2);
+        }
+        
+        .apply-btn {
+            background: rgba(0, 255, 128, 0.15);
+            border-color: rgba(0, 255, 128, 0.5);
+        }
+        
+        .apply-btn:hover {
+            background: rgba(0, 255, 128, 0.3);
+            border-color: #00ff80;
+        }
+        
+        .hint {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #88cfff;
+        }
+        
+        @media (max-width: 480px) {
+            .color-picker-container {
+                padding: 20px;
+            }
+            
+            .color-wheel-wrapper,
+            .color-preview,
+            .hex-input-container,
+            .slider-row {
+                width: 220px;
+            }
+            
+            .color-wheel-wrapper {
+                height: 220px;
+            }
+            
+            .wheel-center {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .rgb-text {
+                font-size: 22px;
+                letter-spacing: 6px;
+            }
+            
+            .color-indicator {
+                width: 22px;
+                height: 22px;
+                top: -11px;
+                left: 99px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="color-picker-container">
+        <h1>ВЫБОР ЦВЕТА</h1>
+        
+        <div class="color-wheel-wrapper" id="colorWheelWrapper">
+            <div class="color-wheel" id="colorWheel"></div>
+            <div class="wheel-center">
+                <div class="rgb-text">
+                    <span>R</span>
+                    <span>G</span>
+                    <span>B</span>
+                </div>
+            </div>
+            <div class="color-indicator" id="colorIndicator"></div>
+        </div>
+        
+        <div class="color-preview" id="colorPreview">
+            RGB(255, 0, 0) #FF0000
+        </div>
+        
+        <div class="hex-input-container">
+            <input type="text" class="hex-input" id="hexInput" value="FF0000" maxlength="6" placeholder="HEX КОД">
+        </div>
+        
+        <div class="slider-row">
+            <div class="slider-item">
+                <div class="slider-header">
+                    <span style="color: #ff6666;">КРАСНЫЙ</span>
+                    <span id="redValue">255</span>
+                </div>
+                <input type="range" min="0" max="255" value="255" class="red-slider" id="redSlider">
+            </div>
+            
+            <div class="slider-item">
+                <div class="slider-header">
+                    <span style="color: #66ff66;">ЗЕЛЕНЫЙ</span>
+                    <span id="greenValue">0</span>
+                </div>
+                <input type="range" min="0" max="255" value="0" class="green-slider" id="greenSlider">
+            </div>
+            
+            <div class="slider-item">
+                <div class="slider-header">
+                    <span style="color: #6666ff;">СИНИЙ</span>
+                    <span id="blueValue">0</span>
+                </div>
+                <input type="range" min="0" max="255" value="0" class="blue-slider" id="blueSlider">
+            </div>
+        </div>
+        
+        <div class="buttons-row">
+            <button class="color-btn" id="randomBtn">
+                <i class="fas fa-random"></i> Случайный
+            </button>
+            <button class="color-btn apply-btn" id="applyBtn">
+                <i class="fas fa-check"></i> Применить
+            </button>
+        </div>
+        
+        <div class="hint">ESC — закрыть | Enter — применить цвет</div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let currentColor = { r: 255, g: 0, b: 0 };
+        let indicator = document.getElementById('colorIndicator');
+        let isDragging = false;
+        
+        // Размеры круга
+        const wheelSize = 260;
+        const wheelRadius = wheelSize / 2;
+        const indicatorRadius = 13;
+        
+        // RGB в HEX
+        function rgbToHex(r, g, b) {
+            return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+        
+        // HEX в RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            if(result) {
+                return {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                };
+            }
+            return { r: 0, g: 0, b: 0 };
+        }
+        
+        // Обновление интерфейса
+        function updateInterface() {
+            // Цвет превью
+            const rgb = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+            document.getElementById('colorPreview').style.background = rgb;
+            
+            // Текст превью
+            const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+            document.getElementById('colorPreview').textContent = 
+                `RGB(${currentColor.r}, ${currentColor.g}, ${currentColor.b}) #${hex}`;
+            
+            // Значения слайдеров
+            document.getElementById('redValue').textContent = currentColor.r;
+            document.getElementById('greenValue').textContent = currentColor.g;
+            document.getElementById('blueValue').textContent = currentColor.b;
+            
+            // HEX поле
+            document.getElementById('hexInput').value = hex;
+            
+            // Обновляем позицию индикатора на основе RGB
+            updateIndicatorPosition();
+        }
+        
+        // Обновление позиции индикатора
+        function updateIndicatorPosition() {
+            // Конвертируем RGB в HSL для получения Hue
+            const r = currentColor.r / 255;
+            const g = currentColor.g / 255;
+            const b = currentColor.b / 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h = 0;
+            
+            if (max !== min) {
+                if (max === r) {
+                    h = ((g - b) / (max - min)) % 6;
+                } else if (max === g) {
+                    h = (b - r) / (max - min) + 2;
+                } else {
+                    h = (r - g) / (max - min) + 4;
+                }
+            }
+            
+            let hueAngle = h * 60;
+            if (hueAngle < 0) hueAngle += 360;
+            
+            // Позиционируем индикатор на краю градиента
+            const gradientRadius = wheelRadius - indicatorRadius - 5;
+            const angleRad = (hueAngle - 90) * Math.PI / 180;
+            
+            const x = wheelRadius + gradientRadius * Math.cos(angleRad) - indicatorRadius;
+            const y = wheelRadius + gradientRadius * Math.sin(angleRad) - indicatorRadius;
+            
+            indicator.style.left = x + 'px';
+            indicator.style.top = y + 'px';
+        }
+        
+        // Применить цвет (отправка в SA-MP)
+        function applyColor() {
+            const hex = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+            
+            // Отправляем через CEF
+            if (typeof cef !== 'undefined') {
+                cef.emit('rgb_color_selected', currentColor.r, currentColor.g, currentColor.b, hex);
+            } else {
+                console.log(`RGB: ${currentColor.r}, ${currentColor.g}, ${currentColor.b} | HEX: #${hex}`);
+            }
+        }
+        
+        // Случайный цвет
+        function randomColor() {
+            currentColor.r = Math.floor(Math.random() * 256);
+            currentColor.g = Math.floor(Math.random() * 256);
+            currentColor.b = Math.floor(Math.random() * 256);
+            
+            updateInterface();
+            
+            // Анимация
+            document.getElementById('colorPreview').style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                document.getElementById('colorPreview').style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        // Закрыть панель
+        function closePanel() {
+            if (typeof cef !== 'undefined') {
+                cef.emit('color_picker_close');
+            }
+        }
+        
+        // Инициализация
+        window.onload = function() {
+            // Начальное обновление
+            updateInterface();
+            
+            // Слайдеры
+            document.getElementById('redSlider').addEventListener('input', function() {
+                currentColor.r = parseInt(this.value);
+                updateInterface();
+            });
+            
+            document.getElementById('greenSlider').addEventListener('input', function() {
+                currentColor.g = parseInt(this.value);
+                updateInterface();
+            });
+            
+            document.getElementById('blueSlider').addEventListener('input', function() {
+                currentColor.b = parseInt(this.value);
+                updateInterface();
+            });
+            
+            // HEX поле
+            document.getElementById('hexInput').addEventListener('input', function() {
+                let hex = this.value.toUpperCase().replace(/[^0-9A-F]/g, '');
+                this.value = hex.substring(0, 6);
+                
+                if (hex.length === 6) {
+                    currentColor = hexToRgb(hex);
+                    updateInterface();
+                }
+            });
+            
+            // Кнопки
+            document.getElementById('applyBtn').addEventListener('click', applyColor);
+            document.getElementById('randomBtn').addEventListener('click', randomColor);
+            
+            // Enter для применения
+            document.getElementById('hexInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') applyColor();
+            });
+            
+            // Обработка колеса
+            const wheel = document.getElementById('colorWheel');
+            const wrapper = document.getElementById('colorWheelWrapper');
+            
+            function handleWheelInteraction(e) {
+                const rect = wrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left - wheelRadius;
+                const y = e.clientY - rect.top - wheelRadius;
+                
+                // Вычисляем угол
+                let angle = Math.atan2(y, x) * 180 / Math.PI;
+                angle = (angle + 90 + 360) % 360;
+                
+                // Конвертируем угол в RGB (HSL модель)
+                const h = angle;
+                const s = 100;
+                const l = 50;
+                
+                // HSL to RGB
+                const c = (1 - Math.abs(2 * l/100 - 1)) * s/100;
+                const xh = c * (1 - Math.abs((h/60) % 2 - 1));
+                const m = l/100 - c/2;
+                
+                let r, g, b;
+                
+                if (h >= 0 && h < 60) {
+                    [r, g, b] = [c, xh, 0];
+                } else if (h >= 60 && h < 120) {
+                    [r, g, b] = [xh, c, 0];
+                } else if (h >= 120 && h < 180) {
+                    [r, g, b] = [0, c, xh];
+                } else if (h >= 180 && h < 240) {
+                    [r, g, b] = [0, xh, c];
+                } else if (h >= 240 && h < 300) {
+                    [r, g, b] = [xh, 0, c];
+                } else {
+                    [r, g, b] = [c, 0, xh];
+                }
+                
+                currentColor.r = Math.round((r + m) * 255);
+                currentColor.g = Math.round((g + m) * 255);
+                currentColor.b = Math.round((b + m) * 255);
+                
+                updateInterface();
+            }
+            
+            wheel.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                handleWheelInteraction(e);
+            });
+            
+            indicator.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                e.stopPropagation();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                handleWheelInteraction(e);
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            // Горячие клавиши
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closePanel();
+                if (e.key === 'Enter') applyColor();
+                if (e.key === 'r' && e.ctrlKey) randomColor();
+            });
+            
+            // Фокус на документ
+            document.body.focus();
+        };
+    </script>
+</body>
+</html>
